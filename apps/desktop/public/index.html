@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ONEBOX — Espace numérique personnel</title>
+  <link rel="icon" type="image/jpeg" href="/assets/logo.jpg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#0066FF',
+              600: '#0052cc',
+              700: '#003d99',
+            },
+            dark: {
+              bg: '#0A0D14',
+              surface: '#121824',
+              card: '#182030',
+              border: '#222C40',
+              text: '#F1F5F9',
+              muted: '#94A3B8'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      user-select: none;
+    }
+    input, textarea, [contenteditable="true"] {
+      user-select: text;
+    }
+    /* Scrollbar personnalisé */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.25);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.45);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-[#0A0D14] dark:text-[#F1F5F9] font-sans antialiased transition-colors duration-200 h-screen flex flex-col overflow-hidden">
+
+  <!-- Entête principale (Header) -->
+  <header class="h-16 border-b border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#0F1420] flex items-center justify-between px-5 shrink-0 z-20">
+    <div class="flex items-center space-x-3.5">
+      <div class="w-9 h-9 rounded-xl overflow-hidden shadow-md shadow-brand-500/20 flex items-center justify-center bg-black">
+        <img src="/assets/logo.jpg" alt="ONEBOX Logo" class="w-full h-full object-cover">
+      </div>
+      <div>
+        <div class="flex items-center space-x-1.5">
+          <span class="font-extrabold text-lg tracking-tight">ONE<span class="text-brand-500">BOX</span></span>
+          <span class="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-500 border border-brand-500/20">MVP v1.0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barre de recherche globale (FTS5 instantané) -->
+    <div class="flex-1 max-w-xl mx-8 relative">
+      <div class="relative flex items-center">
+        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input 
+          id="searchInput"
+          type="text" 
+          placeholder="Rechercher par mot, contenu, tag... (Ctrl + K)" 
+          class="w-full pl-10 pr-20 py-2 rounded-xl text-sm bg-slate-100 dark:bg-[#161D2C] border border-transparent dark:border-[#222C40] focus:border-brand-500 dark:focus:border-brand-500 focus:outline-none transition-all placeholder-slate-400 dark:placeholder-slate-500"
+        >
+        <div class="absolute right-3 flex items-center space-x-1 text-[11px] text-slate-400 dark:text-slate-500 font-mono">
+          <kbd class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-[#20293D] border border-slate-300 dark:border-slate-700">Ctrl</kbd>
+          <kbd class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-[#20293D] border border-slate-300 dark:border-slate-700">K</kbd>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions rapides visibles en permanence (Section 6.1 & 6.2) -->
+    <div class="flex items-center space-x-2">
+      <button onclick="openAddModal('note')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-500 hover:bg-brand-600 text-white transition-all shadow-sm shadow-brand-500/30">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        <span>+ Note</span>
+      </button>
+      <button onclick="openAddModal('link')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-[#1A2234] hover:bg-slate-200 dark:hover:bg-[#222C40] border border-slate-300 dark:border-[#26324B] transition-all">
+        <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+        <span>+ Lien</span>
+      </button>
+      <button onclick="openAddModal('file')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-[#1A2234] hover:bg-slate-200 dark:hover:bg-[#222C40] border border-slate-300 dark:border-[#26324B] transition-all">
+        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+        <span>+ Fichier / Image</span>
+      </button>
+      
+      <div class="h-6 w-[1px] bg-slate-200 dark:bg-[#222C40] mx-1"></div>
+
+      <!-- Thème sombre/clair -->
+      <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1A2234] transition-all" title="Basculer le thème">
+        <svg id="themeIconSun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <svg id="themeIconMoon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Conteneur principal (Sidebar + Contenu) -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- Barre latérale de navigation (Sidebar) -->
+    <aside class="w-64 border-r border-slate-200 dark:border-[#1E2638] bg-slate-100/70 dark:bg-[#0D121D] flex flex-col justify-between shrink-0 p-3 select-none overflow-y-auto">
+      <div class="space-y-6">
+        
+        <!-- Navigation Principale -->
+        <div class="space-y-1">
+          <p class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Navigation</p>
+          
+          <button onclick="setFilterNav('inbox')" id="nav-inbox" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all bg-brand-500/10 text-brand-500 dark:bg-brand-500/20">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+              <span>Boîte de réception</span>
+            </div>
+            <span id="badge-inbox-count" class="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-500 font-bold">0</span>
+          </button>
+
+          <button onclick="setFilterNav('notes')" id="nav-notes" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#161D2C] transition-all">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              <span>Notes</span>
+            </div>
+          </button>
+
+          <button onclick="setFilterNav('links')" id="nav-links" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#161D2C] transition-all">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+              <span>Liens web</span>
+            </div>
+          </button>
+
+          <button onclick="setFilterNav('files')" id="nav-files" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#161D2C] transition-all">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+              <span>Fichiers</span>
+            </div>
+          </button>
+
+          <button onclick="setFilterNav('images')" id="nav-images" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#161D2C] transition-all">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+              <span>Images</span>
+            </div>
+          </button>
+
+          <button onclick="setFilterNav('unclassified')" id="nav-unclassified" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#161D2C] transition-all">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+              <span>Non classés</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Section Tags (MVP-07) -->
+        <div>
+          <div class="flex items-center justify-between px-3 mb-2">
+            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Étiquettes / Tags</p>
+            <button onclick="promptCreateTag()" class="text-xs text-brand-500 hover:text-brand-600 font-semibold">+ Nouveau</button>
+          </div>
+          <div id="tagsListContainer" class="space-y-1">
+            <!-- Rendu dynamique des tags -->
+          </div>
+        </div>
+
+        <!-- Corbeille (MVP-09) -->
+        <div class="pt-2 border-t border-slate-200 dark:border-[#1E2638]">
+          <button onclick="setFilterNav('trash')" id="nav-trash" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-500 dark:hover:text-rose-400 transition-all">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              <span>Corbeille</span>
+            </div>
+            <span id="badge-trash-count" class="text-xs px-2 py-0.5 rounded-full bg-slate-200 dark:bg-[#1E2638] text-slate-500 font-bold">0</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Bas de la Sidebar (Paramètres & Export) -->
+      <div class="pt-4 border-t border-slate-200 dark:border-[#1E2638] space-y-1.5">
+        <button onclick="downloadFullExportZip()" class="w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1A2234] transition-all">
+          <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          <span>Sauvegarder / Exporter</span>
+        </button>
+
+        <button onclick="openSettingsModal()" class="w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1A2234] transition-all">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          <span>Paramètres</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Zone Centrale Principale -->
+    <main class="flex-1 flex flex-col bg-slate-50 dark:bg-[#0A0D14] overflow-hidden">
+      
+      <!-- Barre d'état de vue et filtres rapides -->
+      <div class="px-6 py-4 border-b border-slate-200 dark:border-[#1E2638] flex items-center justify-between shrink-0">
+        <div>
+          <h1 id="viewTitle" class="text-xl font-extrabold tracking-tight">Boîte de réception</h1>
+          <p id="viewSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Éléments récemment enregistrés</p>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <span id="itemsCountBadge" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-[#161D2C] text-slate-600 dark:text-slate-300">
+            0 élément
+          </span>
+          <button id="rebuildIndexBtn" onclick="rebuildSearchIndex()" class="text-xs px-2.5 py-1 rounded-lg border border-slate-300 dark:border-[#222C40] hover:bg-slate-200 dark:hover:bg-[#1A2234] transition-all text-slate-500" title="Réindexer SQLite FTS5">
+            ↺ Reconstruire l'index
+          </button>
+        </div>
+      </div>
+
+      <!-- Liste / Grille des éléments -->
+      <div id="itemsContainer" class="flex-1 overflow-y-auto p-6 space-y-3">
+        <!-- Rendu dynamique des éléments -->
+      </div>
+      
+    </main>
+
+    <!-- Panneau latéral de détail (Slide-in) -->
+    <div id="detailPanel" class="w-96 border-l border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#0F1420] flex flex-col justify-between hidden shrink-0 z-10 overflow-hidden shadow-2xl">
+      <div class="p-5 overflow-y-auto flex-1 space-y-4" id="detailContent">
+        <!-- Rendu dynamique du détail -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal d'ajout rapide (Note, Lien, Fichier) -->
+  <div id="addModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-[#121824] border border-slate-200 dark:border-[#222C40] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Onglets du modal -->
+      <div class="flex border-b border-slate-200 dark:border-[#222C40] bg-slate-50 dark:bg-[#0E131D]">
+        <button onclick="switchAddTab('note')" id="tab-note" class="flex-1 py-3 text-xs font-bold uppercase tracking-wider text-brand-500 border-b-2 border-brand-500">Note</button>
+        <button onclick="switchAddTab('link')" id="tab-link" class="flex-1 py-3 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">Lien</button>
+        <button onclick="switchAddTab('file')" id="tab-file" class="flex-1 py-3 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">Fichier / Image</button>
+      </div>
+
+      <div class="p-6">
+        
+        <!-- Formulaire Note -->
+        <div id="form-note" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Titre de la note</label>
+            <input id="noteTitleInput" type="text" placeholder="Ex: Idée de projet, compte-rendu..." class="w-full px-3 py-2 rounded-xl text-sm bg-slate-100 dark:bg-[#182030] border border-slate-200 dark:border-[#26324B] focus:border-brand-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Contenu (Texte ou Markdown)</label>
+            <textarea id="noteBodyInput" rows="6" placeholder="Rédigez votre note librement..." class="w-full px-3 py-2 rounded-xl text-sm font-mono bg-slate-100 dark:bg-[#182030] border border-slate-200 dark:border-[#26324B] focus:border-brand-500 focus:outline-none"></textarea>
+          </div>
+        </div>
+
+        <!-- Formulaire Lien -->
+        <div id="form-link" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Adresse URL <span class="text-rose-500">*</span></label>
+            <input id="linkUrlInput" type="url" placeholder="https://exemple.fr/article" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-100 dark:bg-[#182030] border border-slate-200 dark:border-[#26324B] focus:border-brand-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Titre facultatif</label>
+            <input id="linkTitleInput" type="text" placeholder="Titre descriptif du lien" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-100 dark:bg-[#182030] border border-slate-200 dark:border-[#26324B] focus:border-brand-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Description</label>
+            <textarea id="linkDescInput" rows="2" placeholder="Brève note sur pourquoi ce lien est utile..." class="w-full px-3 py-2 rounded-xl text-sm bg-slate-100 dark:bg-[#182030] border border-slate-200 dark:border-[#26324B] focus:border-brand-500 focus:outline-none"></textarea>
+          </div>
+        </div>
+
+        <!-- Formulaire Fichier / Image -->
+        <div id="form-file" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Fichier source <span class="text-rose-500">*</span></label>
+            <input id="fileUploadInput" type="file" class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-500 file:text-white hover:file:bg-brand-600 file:cursor-pointer text-slate-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Titre d'affichage (optionnel)</label>
+            <input id="fileTitleInput" type="text" placeholder="Laisser vide pour utiliser le nom du fichier" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-100 dark:bg-[#182030] border border-slate-200 dark:border-[#26324B] focus:border-brand-500 focus:outline-none">
+          </div>
+          <p class="text-[11px] text-slate-500">Mode de stockage : Copie intégrale dans l'espace applicatif local avec calcul de somme SHA-256 (Section 5.4).</p>
+        </div>
+
+        <!-- Sélection de tags pour l'élément -->
+        <div class="mt-4 pt-4 border-t border-slate-200 dark:border-[#222C40]">
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Associer des tags</label>
+          <div id="modalTagsSelector" class="flex flex-wrap gap-1.5">
+            <!-- Rendu des tags sélectionnables -->
+          </div>
+        </div>
+
+      </div>
+
+      <div class="px-6 py-4 bg-slate-50 dark:bg-[#0E131D] border-t border-slate-200 dark:border-[#222C40] flex justify-end space-x-2">
+        <button onclick="closeAddModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#1E2638]">Annuler</button>
+        <button onclick="submitAddItem()" id="submitAddBtn" class="px-5 py-2 rounded-xl text-xs font-semibold bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/25">Enregistrer</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal Paramètres (MVP-11) -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-[#121824] border border-slate-200 dark:border-[#222C40] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+      <div class="p-6 border-b border-slate-200 dark:border-[#222C40] flex items-center justify-between">
+        <h2 class="text-lg font-bold">Paramètres de ONEBOX</h2>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white">✕</button>
+      </div>
+      <div class="p-6 space-y-5 text-sm">
+        
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Langue de l'interface (Section 12)</label>
+          <select id="settingLanguage" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#182030] border border-slate-200 dark:border-[#26324B]">
+            <option value="fr">Français (par défaut)</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Emplacement de stockage local</label>
+          <input id="settingStoragePath" type="text" readonly class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#182030] border border-slate-200 dark:border-[#26324B] text-xs font-mono text-slate-500">
+        </div>
+
+        <div class="p-4 rounded-xl bg-brand-500/10 border border-brand-500/20 text-xs space-y-1">
+          <p class="font-bold text-brand-500">Engagement de confidentialité & Local-first</p>
+          <p class="text-slate-600 dark:text-slate-300">Vos données personnelles, notes, liens et pièces jointes restent exclusivement stockées sur votre appareil. Aucune télémétrie, aucune transmission serveur ni publicité.</p>
+        </div>
+
+        <div class="border-t border-slate-200 dark:border-[#222C40] pt-4 text-xs text-slate-500 space-y-1">
+          <p>Licence : <strong>Apache License 2.0</strong></p>
+          <p>Architecture : <strong>Local-first SQLite + FTS5</strong></p>
+          <p>Version : <strong>1.0.0 (MVP)</strong></p>
+        </div>
+
+      </div>
+      <div class="px-6 py-4 bg-slate-50 dark:bg-[#0E131D] border-t border-slate-200 dark:border-[#222C40] flex justify-end">
+        <button onclick="closeSettingsModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-brand-500 text-white">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast" class="fixed bottom-6 right-6 px-4 py-3 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-semibold shadow-2xl flex items-center space-x-2 transition-all duration-300 opacity-0 pointer-events-none translate-y-3 z-50">
+    <span id="toastMsg">Action effectuée</span>
+  </div>
+
+  <!-- Scripts applicatifs client -->
+  <script>
+    let currentFilter = 'inbox';
+    let currentTagId = null;
+    let currentSearchQuery = '';
+    let itemsList = [];
+    let tagsList = [];
+    let activeModalTab = 'note';
+    let selectedModalTagIds = new Set();
+    let currentActiveDetailItem = null;
+
+    // Gestion du thème
+    function initTheme() {
+      const isDark = localStorage.getItem('onebox_theme') !== 'light';
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        document.getElementById('themeIconMoon').classList.add('hidden');
+        document.getElementById('themeIconSun').classList.remove('hidden');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.getElementById('themeIconSun').classList.add('hidden');
+        document.getElementById('themeIconMoon').classList.remove('hidden');
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('onebox_theme', isDark ? 'dark' : 'light');
+      document.getElementById('themeIconSun').classList.toggle('hidden', !isDark);
+      document.getElementById('themeIconMoon').classList.toggle('hidden', isDark);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      t.classList.remove('opacity-0', 'translate-y-3', 'pointer-events-none');
+      setTimeout(() => {
+        t.classList.add('opacity-0', 'translate-y-3', 'pointer-events-none');
+      }, 3000);
+    }
+
+    // Chargement des données
+    async function fetchTags() {
+      try {
+        const res = await fetch('/api/tags');
+        const data = await res.json();
+        tagsList = data.tags || [];
+        renderTagsSidebar();
+      } catch (err) {
+        console.error('Erreur tags:', err);
+      }
+    }
+
+    function renderTagsSidebar() {
+      const container = document.getElementById('tagsListContainer');
+      if (tagsList.length === 0) {
+        container.innerHTML = '<p class="px-3 text-xs text-slate-400 italic">Aucun tag créé</p>';
+        return;
+      }
+      container.innerHTML = tagsList.map(tag => `
+        <div class="group flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#161D2C] cursor-pointer ${currentTagId === tag.id ? 'bg-brand-500/10 text-brand-500 font-bold' : ''}" onclick="filterByTag('${tag.id}')">
+          <div class="flex items-center space-x-2 truncate">
+            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${tag.color || '#0066FF'}"></span>
+            <span class="truncate">${escapeHtml(tag.name)}</span>
+          </div>
+          <div class="flex items-center space-x-1.5">
+            <span class="text-[10px] text-slate-400 font-mono">${tag.count || 0}</span>
+            <button onclick="event.stopPropagation(); deleteTag('${tag.id}')" class="opacity-0 group-hover:opacity-100 hover:text-rose-500 text-slate-400 text-xs px-1" title="Supprimer le tag">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function fetchItems() {
+      try {
+        let url = '/api/items?';
+        const params = new URLSearchParams();
+
+        if (currentSearchQuery) {
+          params.append('q', currentSearchQuery);
+        }
+
+        if (currentFilter === 'trash') {
+          params.append('trash', 'true');
+        } else if (currentFilter === 'unclassified') {
+          params.append('unclassified', 'true');
+        } else if (currentFilter === 'notes') {
+          params.append('type', 'note');
+        } else if (currentFilter === 'links') {
+          params.append('type', 'link');
+        } else if (currentFilter === 'files') {
+          params.append('type', 'file');
+        } else if (currentFilter === 'images') {
+          params.append('type', 'image');
+        }
+
+        if (currentTagId) {
+          params.append('tagId', currentTagId);
+        }
+
+        const res = await fetch(url + params.toString());
+        const data = await res.json();
+        itemsList = data.items || [];
+        renderItems();
+        updateCounts();
+      } catch (err) {
+        console.error('Erreur items:', err);
+      }
+    }
+
+    function renderItems() {
+      const container = document.getElementById('itemsContainer');
+      const badge = document.getElementById('itemsCountBadge');
+      badge.innerText = `${itemsList.length} élément${itemsList.length > 1 ? 's' : ''}`;
+
+      if (itemsList.length === 0) {
+        container.innerHTML = `
+          <div class="h-64 flex flex-col items-center justify-center text-center p-6 rounded-2xl border border-dashed border-slate-300 dark:border-[#222C40]">
+            <div class="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-500 flex items-center justify-center mb-3">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+            </div>
+            <p class="font-bold text-sm text-slate-700 dark:text-slate-200">Aucun élément ici</p>
+            <p class="text-xs text-slate-500 mt-1 max-w-sm">Capturez une note, un lien ou importez un document en utilisant les boutons rapides ci-dessus.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = itemsList.map(item => {
+        const typeIcons = {
+          note: '<svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>',
+          link: '<svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>',
+          file: '<svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>',
+          image: '<svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>'
+        };
+
+        const localDate = new Date(item.created_at).toLocaleString();
+        const tagBadges = (item.tags || []).map(t => `
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-[#20293D] text-slate-700 dark:text-slate-300">
+            #${escapeHtml(t.name)}
+          </span>
+        `).join('');
+
+        return `
+          <div onclick="selectItem('${item.id}')" class="group p-4 rounded-2xl bg-white dark:bg-[#121824] border border-slate-200 dark:border-[#1E2638] hover:border-brand-500 dark:hover:border-brand-500/80 transition-all cursor-pointer shadow-sm hover:shadow-md flex items-start space-x-4">
+            <div class="p-2.5 rounded-xl bg-slate-100 dark:bg-[#182030] shrink-0 mt-0.5">
+              ${typeIcons[item.type] || typeIcons.note}
+            </div>
+            
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold truncate group-hover:text-brand-500 transition-colors">${escapeHtml(item.title)}</h3>
+                <span class="text-[11px] text-slate-400 shrink-0 font-mono ml-2">${localDate}</span>
+              </div>
+
+              ${item.snippet ? `
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                  ${escapeHtml(item.snippet)}
+                </p>
+              ` : ''}
+
+              <div class="mt-3 flex items-center justify-between">
+                <div class="flex items-center space-x-1.5 flex-wrap">
+                  ${tagBadges}
+                </div>
+                
+                <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  ${currentFilter === 'trash' ? `
+                    <button onclick="event.stopPropagation(); restoreItem('${item.id}')" class="text-xs px-2 py-1 rounded bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 font-semibold">Restaurer</button>
+                    <button onclick="event.stopPropagation(); hardDeleteItem('${item.id}')" class="text-xs px-2 py-1 rounded bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 font-semibold">Supprimer définitivement</button>
+                  ` : `
+                    <button onclick="event.stopPropagation(); moveToTrash('${item.id}')" class="text-xs text-slate-400 hover:text-rose-500 p-1" title="Mettre en corbeille">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                  `}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function selectItem(id) {
+      try {
+        const res = await fetch(`/api/items/${id}`);
+        const item = await res.json();
+        currentActiveDetailItem = item;
+        renderDetailPanel(item);
+      } catch (err) {
+        console.error('Erreur detail item:', err);
+      }
+    }
+
+    function renderDetailPanel(item) {
+      const panel = document.getElementById('detailPanel');
+      const content = document.getElementById('detailContent');
+      panel.classList.remove('hidden');
+
+      let bodyHtml = '';
+      if (item.type === 'note' && item.note) {
+        bodyHtml = `
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-[#161D2C] border border-slate-200 dark:border-[#222C40] text-xs font-mono whitespace-pre-wrap leading-relaxed select-text">
+            ${escapeHtml(item.note.body_text)}
+          </div>
+        `;
+      } else if (item.type === 'link' && item.link) {
+        bodyHtml = `
+          <div class="space-y-3">
+            <a href="${escapeHtml(item.link.url)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-blue-500/10 text-blue-500 text-xs font-semibold hover:bg-blue-500/20 transition-all">
+              <span>Ouvrir l'URL externe</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+            </a>
+            <p class="text-xs font-mono text-slate-400 break-all">${escapeHtml(item.link.url)}</p>
+          </div>
+        `;
+      } else if (item.type === 'image') {
+        bodyHtml = `
+          <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-[#222C40] bg-black/40">
+            <img src="/api/attachments/${item.id}" alt="${escapeHtml(item.title)}" class="w-full max-h-60 object-contain">
+          </div>
+          <p class="text-[11px] font-mono text-slate-400 mt-2">${item.file ? escapeHtml(item.file.display_name) : ''}</p>
+        `;
+      } else if (item.type === 'file' && item.file) {
+        bodyHtml = `
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-[#161D2C] border border-slate-200 dark:border-[#222C40] space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400">Nom du fichier :</span>
+              <span class="font-bold truncate max-w-[180px]">${escapeHtml(item.file.display_name)}</span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400">Taille :</span>
+              <span class="font-mono">${Math.round(item.file.size_bytes / 1024)} Ko</span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-400">Type MIME :</span>
+              <span class="font-mono">${escapeHtml(item.file.mime_type)}</span>
+            </div>
+            <div class="pt-2 border-t border-slate-200 dark:border-[#222C40] text-[10px] font-mono text-slate-500 break-all">
+              SHA-256 : ${escapeHtml(item.file.checksum)}
+            </div>
+          </div>
+        `;
+      }
+
+      content.innerHTML = `
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#1E2638]">
+          <span class="text-xs uppercase font-extrabold px-2 py-0.5 rounded bg-brand-500/10 text-brand-500">${item.type}</span>
+          <button onclick="closeDetailPanel()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-sm">✕</button>
+        </div>
+
+        <div>
+          <h2 class="text-lg font-bold leading-snug select-text">${escapeHtml(item.title)}</h2>
+          <p class="text-xs text-slate-400 mt-1 font-mono">${new Date(item.created_at).toLocaleString()}</p>
+        </div>
+
+        ${bodyHtml}
+
+        <div class="space-y-1.5 pt-3 border-t border-slate-200 dark:border-[#1E2638]">
+          <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Tags</label>
+          <div class="flex flex-wrap gap-1.5">
+            ${(item.tags || []).map(t => `
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#1E2638] text-slate-600 dark:text-slate-300">
+                #${escapeHtml(t.name)}
+              </span>
+            `).join('') || '<span class="text-xs text-slate-400 italic">Aucun tag associé</span>'}
+          </div>
+        </div>
+
+        <div class="pt-6 border-t border-slate-200 dark:border-[#1E2638] flex justify-between items-center">
+          <button onclick="moveToTrash('${item.id}')" class="text-xs text-rose-500 hover:text-rose-600 font-semibold flex items-center space-x-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            <span>Mettre en corbeille</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function closeDetailPanel() {
+      document.getElementById('detailPanel').classList.add('hidden');
+    }
+
+    // Gestion de la Corbeille et Restauration
+    async function moveToTrash(id) {
+      try {
+        const res = await fetch(`/api/items/${id}/trash`, { method: 'POST' });
+        if (res.ok) {
+          showToast('Élément placé dans la corbeille');
+          closeDetailPanel();
+          fetchItems();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function restoreItem(id) {
+      try {
+        const res = await fetch(`/api/items/${id}/restore`, { method: 'POST' });
+        if (res.ok) {
+          showToast('Élément restauré avec succès');
+          fetchItems();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function hardDeleteItem(id) {
+      if (!confirm('Supprimer définitivement cet élément ? Cette action est irréversible.')) return;
+      try {
+        const res = await fetch(`/api/items/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast('Élément définitivement supprimé');
+          fetchItems();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Modal Ajout Rapide
+    function openAddModal(tab = 'note') {
+      selectedModalTagIds.clear();
+      renderModalTagsSelector();
+      switchAddTab(tab);
+      document.getElementById('addModal').classList.remove('hidden');
+      setTimeout(() => {
+        if (tab === 'note') document.getElementById('noteTitleInput').focus();
+        if (tab === 'link') document.getElementById('linkUrlInput').focus();
+      }, 50);
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').classList.add('hidden');
+      document.getElementById('noteTitleInput').value = '';
+      document.getElementById('noteBodyInput').value = '';
+      document.getElementById('linkUrlInput').value = '';
+      document.getElementById('linkTitleInput').value = '';
+      document.getElementById('linkDescInput').value = '';
+      document.getElementById('fileUploadInput').value = '';
+      document.getElementById('fileTitleInput').value = '';
+    }
+
+    function switchAddTab(tab) {
+      activeModalTab = tab;
+      ['note', 'link', 'file'].forEach(t => {
+        document.getElementById(`form-${t}`).classList.toggle('hidden', t !== tab);
+        const tabBtn = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+          tabBtn.className = 'flex-1 py-3 text-xs font-bold uppercase tracking-wider text-brand-500 border-b-2 border-brand-500';
+        } else {
+          tabBtn.className = 'flex-1 py-3 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 dark:hover:text-slate-300';
+        }
+      });
+    }
+
+    function renderModalTagsSelector() {
+      const container = document.getElementById('modalTagsSelector');
+      if (tagsList.length === 0) {
+        container.innerHTML = '<span class="text-xs text-slate-400 italic">Créez des tags dans la colonne latérale pour les associer.</span>';
+        return;
+      }
+      container.innerHTML = tagsList.map(tag => {
+        const isSelected = selectedModalTagIds.has(tag.id);
+        return `
+          <button type="button" onclick="toggleModalTag('${tag.id}')" class="text-xs font-semibold px-2.5 py-1 rounded-full border transition-all ${isSelected ? 'bg-brand-500 text-white border-brand-500' : 'bg-slate-100 dark:bg-[#1A2234] border-slate-200 dark:border-[#26324B] text-slate-600 dark:text-slate-300'}">
+            #${escapeHtml(tag.name)}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function toggleModalTag(tagId) {
+      if (selectedModalTagIds.has(tagId)) {
+        selectedModalTagIds.delete(tagId);
+      } else {
+        selectedModalTagIds.add(tagId);
+      }
+      renderModalTagsSelector();
+    }
+
+    async function submitAddItem() {
+      const tagIds = Array.from(selectedModalTagIds);
+
+      if (activeModalTab === 'note') {
+        const title = document.getElementById('noteTitleInput').value.trim();
+        const body_text = document.getElementById('noteBodyInput').value.trim();
+        if (!title && !body_text) {
+          alert('Veuillez renseigner un titre ou du texte pour la note.');
+          return;
+        }
+
+        const res = await fetch('/api/items/note', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, body_text, tagIds })
+        });
+        if (res.ok) {
+          showToast('Note enregistrée');
+          closeAddModal();
+          fetchItems();
+          fetchTags();
+        }
+      } else if (activeModalTab === 'link') {
+        const url = document.getElementById('linkUrlInput').value.trim();
+        const title = document.getElementById('linkTitleInput').value.trim();
+        const description = document.getElementById('linkDescInput').value.trim();
+
+        if (!url) {
+          alert('Veuillez entrer une URL valide.');
+          return;
+        }
+
+        const res = await fetch('/api/items/link', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, title, description, tagIds })
+        });
+        if (res.ok) {
+          showToast('Lien enregistré');
+          closeAddModal();
+          fetchItems();
+          fetchTags();
+        }
+      } else if (activeModalTab === 'file') {
+        const fileInput = document.getElementById('fileUploadInput');
+        if (!fileInput.files || fileInput.files.length === 0) {
+          alert('Veuillez sélectionner un fichier.');
+          return;
+        }
+
+        const file = fileInput.files[0];
+        const title = document.getElementById('fileTitleInput').value.trim();
+
+        const formData = new FormData();
+        formData.append('file', file);
+        if (title) formData.append('title', title);
+        formData.append('tagIds', JSON.stringify(tagIds));
+
+        const res = await fetch('/api/items/file', {
+          method: 'POST',
+          body: formData
+        });
+        if (res.ok) {
+          showToast('Fichier importé avec succès');
+          closeAddModal();
+          fetchItems();
+          fetchTags();
+        }
+      }
+    }
+
+    // Gestion des tags
+    async function promptCreateTag() {
+      const name = prompt('Nom du nouveau tag :');
+      if (!name || name.trim().length === 0) return;
+      try {
+        const res = await fetch('/api/tags', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name.trim() })
+        });
+        if (res.ok) {
+          showToast('Tag créé');
+          fetchTags();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function deleteTag(id) {
+      if (!confirm('Supprimer ce tag ?')) return;
+      try {
+        await fetch(`/api/tags/${id}`, { method: 'DELETE' });
+        showToast('Tag supprimé');
+        if (currentTagId === id) currentTagId = null;
+        fetchTags();
+        fetchItems();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function filterByTag(tagId) {
+      if (currentTagId === tagId) {
+        currentTagId = null;
+      } else {
+        currentTagId = tagId;
+      }
+      renderTagsSidebar();
+      fetchItems();
+    }
+
+    // Navigation et filtres
+    function setFilterNav(filter) {
+      currentFilter = filter;
+      currentTagId = null;
+      
+      const titles = {
+        inbox: 'Boîte de réception',
+        notes: 'Notes',
+        links: 'Liens sauvegardés',
+        files: 'Fichiers & Documents',
+        images: 'Galerie d\'images',
+        unclassified: 'Éléments non classés',
+        trash: 'Corbeille'
+      };
+
+      document.getElementById('viewTitle').innerText = titles[filter] || 'Éléments';
+      document.getElementById('viewSubtitle').innerText = filter === 'trash' ? 'Éléments supprimés prêts à être restaurés ou purgés' : 'Consultation locale';
+
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.className = 'nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#161D2C] transition-all';
+      });
+
+      const activeEl = document.getElementById(`nav-${filter}`);
+      if (activeEl) {
+        activeEl.className = 'nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-bold transition-all bg-brand-500/10 text-brand-500 dark:bg-brand-500/20';
+      }
+
+      fetchItems();
+    }
+
+    async function updateCounts() {
+      try {
+        const resInbox = await fetch('/api/items?trash=false');
+        const dataInbox = await resInbox.json();
+        document.getElementById('badge-inbox-count').innerText = dataInbox.count || 0;
+
+        const resTrash = await fetch('/api/items?trash=true');
+        const dataTrash = await resTrash.json();
+        document.getElementById('badge-trash-count').innerText = dataTrash.count || 0;
+      } catch {}
+    }
+
+    // Export ZIP
+    function downloadFullExportZip() {
+      showToast('Génération de l\'archive ZIP...');
+      window.location.href = '/api/export/zip';
+    }
+
+    // Modal Paramètres
+    async function openSettingsModal() {
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        document.getElementById('settingStoragePath').value = data.storagePath || '';
+        document.getElementById('settingLanguage').value = data.language || 'fr';
+        document.getElementById('settingsModal').classList.remove('hidden');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.add('hidden');
+    }
+
+    async function rebuildSearchIndex() {
+      showToast('Réindexation en cours...');
+      fetchItems();
+    }
+
+    // Raccourcis clavier (Ctrl+K)
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        document.getElementById('searchInput').focus();
+      }
+      if (e.key === 'Escape') {
+        closeAddModal();
+        closeSettingsModal();
+        closeDetailPanel();
+      }
+    });
+
+    // Écoute de recherche instantanée
+    let searchDebounce = null;
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        currentSearchQuery = e.target.value.trim();
+        fetchItems();
+      }, 150);
+    });
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Initialisation au démarrage
+    initTheme();
+    fetchTags();
+    fetchItems();
+  </script>
+</body>
+</html>

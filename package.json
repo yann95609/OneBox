@@ -1,0 +1,20 @@
+{
+  "name": "onebox",
+  "version": "1.0.0",
+  "description": "Espace numérique personnel pour capturer, organiser et retrouver ses informations",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-strip-types apps/desktop/server.ts",
+    "test": "node --experimental-strip-types --test test/*.test.ts"
+  },
+  "keywords": [
+    "local-first",
+    "personal-knowledge-base",
+    "search",
+    "sqlite",
+    "fts5"
+  ],
+  "author": "ONEBOX Contributors",
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,9 @@
+node_modules/
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/attachments/*
+!data/attachments/.gitkeep
+dist/
+.DS_Store
+Thumbs.db
