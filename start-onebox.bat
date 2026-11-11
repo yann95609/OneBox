@@ -12,3 +12,4 @@ if %ERRORLEVEL% NEQ 0 (
   echo Une erreur est survenue lors de l'execution de ONEBOX.
   pause
 )
+

@@ -201,6 +201,27 @@ test('ONEBOX Suite Complète - Critères d\'acceptation MVP', async (t) => {
     assert.ok(found.length > 0, 'La note restaurée doit être immédiatement indexée dans FTS5');
   });
 
+  await t.test('AC-12: Duplication native et vidage de la corbeille', () => {
+    // 1. Duplication
+    const source = db.createItem({
+      type: 'note',
+      title: 'Note originale',
+      note: { body_text: 'Texte à dupliquer fidèlement.', format: 'markdown' }
+    });
+    const copy = db.duplicateItem(source.id);
+    assert.ok(copy, 'La note doit être dupliquée avec succès');
+    assert.strictEqual(copy?.title, 'Copie de Note originale');
+    assert.strictEqual(copy?.note?.body_text, 'Texte à dupliquer fidèlement.');
+    assert.notStrictEqual(copy?.id, source.id, 'La copie doit posséder son propre identifiant');
+
+    // 2. Vidage de la corbeille
+    db.softDeleteItem(copy!.id);
+    assert.ok(db.getItemById(copy!.id)?.deleted_at, 'L\'élément doit être marqué dans la corbeille');
+    const emptyRes = db.emptyTrash();
+    assert.ok(emptyRes.count >= 1, 'Au moins un élément doit être purgé définitivement');
+    assert.strictEqual(db.getItemById(copy!.id), null, 'L\'élément purgé ne doit plus exister en base');
+  });
+
   // Nettoyage final
   db.db.close();
   if (fs.existsSync(TEST_DB_PATH)) fs.unlinkSync(TEST_DB_PATH);

@@ -3,25 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OneBox</title>
+  <title>OneBox — Espace de Connaissances Personnel</title>
   <link rel="icon" type="image/jpeg" href="/assets/logo.jpg">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
             brand: {
               DEFAULT: '#0066FF',
               hover: '#0052CC',
-              subtle: 'rgba(0, 102, 255, 0.12)'
+              light: '#EBF3FF',
+              dark: '#003D99'
             }
           }
         }
@@ -29,239 +31,444 @@
     }
   </script>
   <style>
-    /* Style application de bureau native */
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: '"Plus Jakarta Sans"', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       user-select: none;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     input, textarea, [contenteditable="true"] {
       user-select: text;
     }
     ::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
+      width: 6px;
+      height: 6px;
     }
     ::-webkit-scrollbar-track {
       background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: rgba(140, 140, 140, 0.2);
-      border-radius: 4px;
+      background: rgba(150, 150, 150, 0.25);
+      border-radius: 9999px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(140, 140, 140, 0.4);
+      background: rgba(150, 150, 150, 0.45);
+    }
+    .prose-editor {
+      line-height: 1.75;
+      tab-size: 2;
+    }
+    .markdown-rendered h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.025em;
+      border-bottom: 1px solid rgba(150,150,150,0.15);
+      padding-bottom: 0.35rem;
+    }
+    .markdown-rendered h2 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.015em;
+    }
+    .markdown-rendered h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-top: 1rem;
+      margin-bottom: 0.4rem;
+    }
+    .markdown-rendered p {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.7;
+    }
+    .markdown-rendered ul {
+      list-style-type: disc;
+      padding-left: 1.4rem;
+      margin: 0.5rem 0;
+    }
+    .markdown-rendered ol {
+      list-style-type: decimal;
+      padding-left: 1.4rem;
+      margin: 0.5rem 0;
+    }
+    .markdown-rendered blockquote {
+      border-left: 3px solid #0066FF;
+      padding-left: 1rem;
+      font-style: italic;
+      color: rgba(150, 150, 150, 0.9);
+      margin: 0.75rem 0;
+    }
+    .markdown-rendered pre {
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 0.85rem 1rem;
+      border-radius: 0.5rem;
+      font-family: '"JetBrains Mono"', monospace;
+      font-size: 0.82rem;
+      overflow-x: auto;
+      margin: 0.75rem 0;
+      border: 1px solid rgba(150,150,150,0.15);
+    }
+    .markdown-rendered code:not(pre code) {
+      font-family: '"JetBrains Mono"', monospace;
+      font-size: 0.82em;
+      background: rgba(150, 150, 150, 0.15);
+      padding: 0.15rem 0.35rem;
+      border-radius: 0.25rem;
+    }
+    .markdown-rendered a {
+      color: #0066FF;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      margin: 0.35rem 0;
+      cursor: pointer;
+    }
+    .task-checkbox {
+      margin-top: 0.25rem;
+      margin-right: 0.55rem;
+      cursor: pointer;
+      accent-color: #0066FF;
+      width: 1rem;
+      height: 1rem;
+      border-radius: 0.25rem;
+    }
+    .task-done {
+      text-decoration: line-through;
+      opacity: 0.55;
+    }
+    .search-highlight {
+      background-color: rgba(255, 215, 0, 0.3);
+      color: inherit;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+    .dark .search-highlight {
+      background-color: rgba(255, 215, 0, 0.25);
     }
   </style>
 </head>
-<body class="h-screen w-screen flex flex-col bg-white text-zinc-900 dark:bg-[#111215] dark:text-[#E4E5E8] overflow-hidden">
+<body class="h-screen w-screen flex flex-col bg-white text-zinc-900 dark:bg-[#0E0F12] dark:text-[#E2E4E9] overflow-hidden">
 
-  <!-- Barre supérieure de fenêtre (Window Titlebar) -->
-  <header class="h-11 border-b border-zinc-200 dark:border-[#222328] bg-zinc-50 dark:bg-[#16171B] flex items-center justify-between px-3.5 select-none shrink-0 z-30">
-    <div class="flex items-center space-x-3">
-      <div class="flex items-center space-x-2">
-        <img src="/assets/logo.jpg" alt="Logo" class="w-5 h-5 rounded object-cover shadow-sm">
-        <span class="font-semibold text-xs tracking-tight">OneBox</span>
+  <!-- ========================================== -->
+  <!-- 1. BARRE DE TITRE DESKTOP (Style macOS / Windows) -->
+  <!-- ========================================== -->
+  <header class="h-12 border-b border-zinc-200 dark:border-[#1E2026] bg-zinc-50/90 dark:bg-[#14151A]/95 backdrop-blur-md flex items-center justify-between px-3 shrink-0 select-none z-30">
+    <div class="flex items-center space-x-2.5">
+      <!-- Bouton Réduire/Déplier Navigation latérale (Ctrl+\) -->
+      <button onclick="toggleSidebar()" class="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-200/60 dark:hover:bg-[#20222A] transition-colors" title="Masquer / Afficher le panneau latéral (Ctrl+\)">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+      </button>
+
+      <!-- Logo Officiel et Nom -->
+      <div class="flex items-center space-x-2 pl-0.5">
+        <img src="/assets/logo.jpg" alt="Logo OneBox" class="w-5 h-5 rounded-md object-cover shadow-sm ring-1 ring-zinc-300 dark:ring-zinc-700">
+        <span class="font-bold text-xs tracking-tight text-zinc-900 dark:text-zinc-100">OneBox</span>
       </div>
-      <div class="h-3 w-[1px] bg-zinc-300 dark:bg-zinc-700"></div>
-      <span class="text-[11px] text-zinc-600 dark:text-zinc-300 font-medium flex items-center space-x-1.5">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-        <span>Stockage local</span>
+
+      <div class="h-3.5 w-[1px] bg-zinc-300 dark:bg-zinc-800 mx-1"></div>
+
+      <!-- Statut Local Souverain -->
+      <span class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium flex items-center space-x-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-500/20"></span>
+        <span class="hidden sm:inline">100% Hors-ligne</span>
       </span>
     </div>
 
-    <div class="flex items-center space-x-2">
-      <button onclick="toggleTheme()" class="p-1.5 rounded text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-[#25262B] transition-colors" title="Basculer le thème">
+    <!-- Actions globales au centre et à droite -->
+    <div class="flex items-center space-x-1.5">
+      
+      <!-- Palette de commandes rapide (Ctrl+K / Ctrl+P) -->
+      <button onclick="openCommandPalette()" class="hidden md:flex items-center space-x-2 px-2.5 py-1 rounded-lg bg-zinc-200/60 dark:bg-[#1A1C24] hover:bg-zinc-200 dark:hover:bg-[#242733] border border-zinc-300/50 dark:border-[#262835] text-zinc-500 dark:text-zinc-400 text-xs transition-colors" title="Ouvrir la palette de commandes rapide">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <span>Accès rapide...</span>
+        <kbd class="font-mono text-[10px] px-1 py-0.2 rounded bg-white dark:bg-[#121318] border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400">Ctrl+K</kbd>
+      </button>
+
+      <!-- Bouton Nouvelle Note Directe (Ctrl+N) -->
+      <button onclick="createNewNote()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-hover text-white text-xs font-semibold shadow-sm transition-all active:scale-[0.98]">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <span class="hidden sm:inline">Nouvelle note</span>
+        <span class="text-[10px] opacity-75 font-mono ml-0.5">Ctrl+N</span>
+      </button>
+
+      <!-- Menu Déroulant Ajout Rapide (Lien, Fichier, Importer Markdown) -->
+      <div class="relative">
+        <button onclick="toggleQuickAddMenu()" class="p-1.5 rounded-lg border border-zinc-200 dark:border-[#252833] hover:bg-zinc-100 dark:hover:bg-[#1F212A] text-zinc-600 dark:text-zinc-300 transition-colors" title="Ajouter un lien ou un fichier">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+        </button>
+
+        <div id="quickAddMenu" class="hidden absolute right-0 mt-1 w-52 rounded-xl bg-white dark:bg-[#181920] border border-zinc-200 dark:border-[#282A36] shadow-2xl py-1 text-xs z-50 animate-in fade-in zoom-in-95 duration-100">
+          <button onclick="promptAddLink()" class="w-full px-3 py-2 text-left hover:bg-zinc-100 dark:hover:bg-[#232530] flex items-center space-x-2">
+            <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+            <span>Enregistrer un lien web</span>
+          </button>
+          <label class="w-full px-3 py-2 text-left hover:bg-zinc-100 dark:hover:bg-[#232530] flex items-center space-x-2 cursor-pointer">
+            <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            <span>Importer un document / image</span>
+            <input type="file" onchange="uploadDirectFile(event)" class="hidden">
+          </label>
+          <label class="w-full px-3 py-2 text-left hover:bg-zinc-100 dark:hover:bg-[#232530] flex items-center space-x-2 cursor-pointer border-t border-zinc-100 dark:border-[#232530]">
+            <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span>Importer une note Markdown (.md)</span>
+            <input type="file" accept=".md,.txt" onchange="importMarkdownFile(event)" class="hidden">
+          </label>
+        </div>
+      </div>
+
+      <div class="h-4 w-[1px] bg-zinc-200 dark:bg-[#22242E] mx-1"></div>
+
+      <!-- Basculer Thème Sombre / Clair -->
+      <button onclick="toggleTheme()" class="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-200/60 dark:hover:bg-[#20222A] transition-colors" title="Changer le thème">
         <svg id="themeIconSun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
         <svg id="themeIconMoon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
       </button>
-      <button onclick="openSettingsModal()" class="p-1.5 rounded text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-[#25262B] transition-colors" title="Paramètres">
+
+      <!-- Paramètres / Sauvegardes -->
+      <button onclick="openSettingsModal()" class="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-200/60 dark:hover:bg-[#20222A] transition-colors" title="Paramètres et sauvegardes">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
       </button>
     </div>
   </header>
 
-  <!-- Application Principale (Disposition 3 colonnes style logiciel classique) -->
+  <!-- ========================================== -->
+  <!-- 2. CORPS PRINCIPAL (3 COLONNES STYLE OBSIDIAN / BEAR / APPLE NOTES) -->
+  <!-- ========================================== -->
   <div class="flex-1 flex overflow-hidden">
 
-    <!-- Colonne 1 : Navigation latérale -->
-    <nav class="w-56 border-r border-zinc-200 dark:border-[#222328] bg-zinc-50/70 dark:bg-[#141519] flex flex-col justify-between shrink-0 p-2.5 select-none">
+    <!-- COLONNE 1 : Navigation latérale (repliable) -->
+    <aside id="sidebarNav" class="w-60 border-r border-zinc-200 dark:border-[#1E2026] bg-zinc-50/70 dark:bg-[#121317] flex flex-col justify-between shrink-0 select-none p-2.5 transition-all duration-200">
       <div class="space-y-4">
         
-        <!-- Bouton Nouveau -->
-        <button onclick="createNewNote()" class="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg bg-brand hover:bg-brand-hover text-white text-xs font-medium transition-all shadow-sm">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-          <span>Nouvelle note</span>
-        </button>
-
-        <!-- Menus de contenu -->
+        <!-- Section Bibliothèque Principale -->
         <div class="space-y-0.5">
-          <button onclick="setFilter('inbox')" id="nav-inbox" class="nav-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium bg-zinc-200 dark:bg-[#22242B] text-zinc-900 dark:text-white">
+          <p class="px-2.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Bibliothèque</p>
+          
+          <button onclick="setFilter('inbox')" id="nav-inbox" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-zinc-200/80 dark:bg-[#1E2129] text-zinc-900 dark:text-white transition-colors">
             <div class="flex items-center space-x-2">
               <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
               <span>Tous les éléments</span>
             </div>
-            <span id="count-inbox" class="text-[10px] text-zinc-600 dark:text-zinc-300 font-medium">0</span>
+            <span id="badge-all-count" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono font-medium">0</span>
           </button>
 
-          <button onclick="setFilter('notes')" id="nav-notes" class="nav-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-[#1E2026]">
-            <div class="flex items-center space-x-2">
-              <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-              <span>Notes</span>
-            </div>
-            <span id="count-notes" class="text-[10px] text-zinc-600 dark:text-zinc-300 font-medium">0</span>
-          </button>
-
-          <button onclick="setFilter('links')" id="nav-links" class="nav-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-[#1E2026]">
-            <div class="flex items-center space-x-2">
-              <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-              <span>Liens</span>
-            </div>
-            <span id="count-links" class="text-[10px] text-zinc-600 dark:text-zinc-300 font-medium">0</span>
-          </button>
-
-          <button onclick="setFilter('files')" id="nav-files" class="nav-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-[#1E2026]">
-            <div class="flex items-center space-x-2">
-              <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-              <span>Fichiers & Images</span>
-            </div>
-            <span id="count-files" class="text-[10px] text-zinc-600 dark:text-zinc-300 font-medium">0</span>
-          </button>
-
-          <button onclick="setFilter('favorites')" id="nav-favorites" class="nav-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-[#1E2026]">
+          <button onclick="setFilter('favorites')" id="nav-favorites" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#1B1D24] transition-colors">
             <div class="flex items-center space-x-2">
               <svg class="w-3.5 h-3.5 text-amber-500 fill-amber-500" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-              <span>Favoris</span>
+              <span>Favoris / Épinglés</span>
             </div>
-            <span id="count-favs" class="text-[10px] text-zinc-600 dark:text-zinc-300 font-medium">0</span>
+            <span id="badge-fav-count" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">0</span>
+          </button>
+
+          <button onclick="setFilter('notes')" id="nav-notes" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#1B1D24] transition-colors">
+            <div class="flex items-center space-x-2">
+              <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              <span>Notes de texte</span>
+            </div>
+            <span id="badge-notes-count" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">0</span>
+          </button>
+
+          <button onclick="setFilter('links')" id="nav-links" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#1B1D24] transition-colors">
+            <div class="flex items-center space-x-2">
+              <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+              <span>Liens web</span>
+            </div>
+            <span id="badge-links-count" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">0</span>
+          </button>
+
+          <button onclick="setFilter('files')" id="nav-files" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#1B1D24] transition-colors">
+            <div class="flex items-center space-x-2">
+              <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+              <span>Fichiers & Documents</span>
+            </div>
+            <span id="badge-files-count" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">0</span>
           </button>
         </div>
 
-        <!-- Section Étiquettes -->
-        <div class="pt-2 border-t border-zinc-200 dark:border-[#222328]">
+        <!-- Section Étiquettes avec pastilles de couleur -->
+        <div class="pt-2 border-t border-zinc-200 dark:border-[#1E2026]">
           <div class="flex items-center justify-between px-2.5 mb-1.5">
-            <span class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Étiquettes</span>
-            <button onclick="createTagPrompt()" class="text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200" title="Ajouter une étiquette">+</button>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Étiquettes</span>
+            <button onclick="promptCreateTag()" class="text-xs text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 p-0.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors" title="Créer une étiquette">+</button>
           </div>
-          <div id="tagsNavContainer" class="space-y-0.5 max-h-48 overflow-y-auto">
-            <!-- Rendu des tags -->
+          <div id="tagsListNav" class="space-y-0.5 max-h-48 overflow-y-auto pr-1">
+            <!-- Rendu dynamique -->
           </div>
         </div>
 
       </div>
 
-      <!-- Bas de colonne latérale -->
-      <div class="pt-2 border-t border-zinc-200 dark:border-[#222328] space-y-0.5">
-        <button onclick="setFilter('trash')" id="nav-trash" class="nav-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium text-zinc-500 hover:bg-zinc-200/60 dark:hover:bg-[#1E2026]">
+      <!-- Bas de Navigation : Corbeille & Raccourci -->
+      <div class="pt-2 border-t border-zinc-200 dark:border-[#1E2026] space-y-1">
+        <button onclick="setFilter('trash')" id="nav-trash" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-500 hover:bg-zinc-200/50 dark:hover:bg-[#1B1D24] transition-colors">
           <div class="flex items-center space-x-2">
             <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             <span>Corbeille</span>
           </div>
-          <span id="count-trash" class="text-[10px] text-zinc-600 dark:text-zinc-300 font-medium">0</span>
+          <span id="badge-trash-count" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">0</span>
         </button>
 
-        <button onclick="openExportModal()" class="w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-md text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-[#1E2026]">
-          <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-          <span>Exporter / Sauvegarder</span>
-        </button>
+        <div class="px-2.5 py-1 text-[10px] text-zinc-400 dark:text-zinc-600 flex items-center justify-between">
+          <span>v1.0.0 Local</span>
+          <span class="font-mono">SQLite WAL</span>
+        </div>
       </div>
-    </nav>
+    </aside>
 
-    <!-- Colonne 2 : Liste des éléments -->
-    <section class="w-72 border-r border-zinc-200 dark:border-[#222328] bg-white dark:bg-[#16171B] flex flex-col shrink-0 select-none">
+    <!-- COLONNE 2 : Liste des notes & éléments (style Bear / Apple Notes) -->
+    <section class="w-80 border-r border-zinc-200 dark:border-[#1E2026] bg-white dark:bg-[#121317] flex flex-col shrink-0 select-none">
       
-      <!-- Barre de recherche -->
-      <div class="p-2.5 border-b border-zinc-200 dark:border-[#222328] flex items-center space-x-2">
-        <div class="relative flex-1">
-          <svg class="w-3.5 h-3.5 text-zinc-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      <!-- Barre de recherche et filtres de types -->
+      <div class="p-2.5 border-b border-zinc-200 dark:border-[#1E2026] space-y-2">
+        <div class="relative flex items-center">
+          <svg class="w-3.5 h-3.5 text-zinc-400 absolute left-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           <input 
             id="searchInput" 
             type="text" 
             placeholder="Rechercher... (Ctrl+K)" 
-            class="w-full pl-8 pr-3 py-1.5 rounded-md text-xs bg-zinc-100 dark:bg-[#1E2026] border border-transparent focus:border-brand dark:focus:border-brand focus:outline-none placeholder-zinc-400"
+            class="w-full pl-8 pr-7 py-1.5 rounded-lg text-xs bg-zinc-100 dark:bg-[#1A1C24] border border-transparent focus:border-brand focus:outline-none placeholder-zinc-400 text-zinc-800 dark:text-zinc-100 transition-all"
+            autocomplete="off"
+            spellcheck="false"
           >
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">✕</button>
         </div>
-        
-        <!-- Bouton d'ajout rapide (Lien / Fichier) -->
-        <div class="relative">
-          <button onclick="toggleQuickMenu()" class="p-1.5 rounded border border-zinc-200 dark:border-[#2A2C34] hover:bg-zinc-100 dark:hover:bg-[#202228] text-zinc-600 dark:text-zinc-300" title="Ajouter un lien ou un fichier">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-          </button>
-          
-          <div id="quickMenu" class="hidden absolute right-0 mt-1 w-44 rounded-lg bg-white dark:bg-[#1F2128] border border-zinc-200 dark:border-[#2C2E38] shadow-lg py-1 text-xs z-40">
-            <button onclick="openAddLinkPrompt()" class="w-full px-3 py-1.5 text-left hover:bg-zinc-100 dark:hover:bg-[#282A33] flex items-center space-x-2">
-              <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-              <span>Enregistrer un lien</span>
-            </button>
-            <label class="w-full px-3 py-1.5 text-left hover:bg-zinc-100 dark:hover:bg-[#282A33] flex items-center space-x-2 cursor-pointer">
-              <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-              <span>Importer un fichier...</span>
-              <input type="file" onchange="uploadDirectFile(event)" class="hidden">
-            </label>
-          </div>
+
+        <!-- Filtres rapides par type (Pastilles) -->
+        <div class="flex items-center space-x-1 text-[11px] overflow-x-auto pb-0.5">
+          <button onclick="setQuickType('all')" id="chip-all" class="chip-filter px-2 py-0.5 rounded-md font-semibold bg-zinc-200 dark:bg-[#22242E] text-zinc-900 dark:text-white transition-colors">Tout</button>
+          <button onclick="setQuickType('note')" id="chip-note" class="chip-filter px-2 py-0.5 rounded-md font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#1A1C22] transition-colors">Notes</button>
+          <button onclick="setQuickType('link')" id="chip-link" class="chip-filter px-2 py-0.5 rounded-md font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#1A1C22] transition-colors">Liens</button>
+          <button onclick="setQuickType('file')" id="chip-file" class="chip-filter px-2 py-0.5 rounded-md font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#1A1C22] transition-colors">Fichiers</button>
         </div>
       </div>
 
-      <!-- Liste scrollable -->
-      <div id="itemsList" class="flex-1 overflow-y-auto divide-y divide-zinc-100 dark:divide-[#1D1F25]">
-        <!-- Rendu dynamique des éléments -->
+      <!-- Bandeau d'actions si vue Corbeille -->
+      <div id="trashBannerHeader" class="hidden px-3 py-2 bg-amber-500/10 border-b border-amber-500/20 text-xs text-amber-600 dark:text-amber-400 flex items-center justify-between">
+        <span class="font-medium">Corbeille active</span>
+        <button onclick="emptyEntireTrash()" class="font-semibold underline hover:text-amber-700 dark:hover:text-amber-300">Vider</button>
+      </div>
+
+      <!-- Liste des cartes déroulante -->
+      <div id="itemsListContainer" class="flex-1 overflow-y-auto divide-y divide-zinc-100 dark:divide-[#181A20] focus:outline-none" tabindex="0">
+        <!-- Rendu dynamique -->
       </div>
     </section>
 
-    <!-- Colonne 3 : Espace de travail / Éditeur / Visualiseur central -->
-    <main class="flex-1 flex flex-col bg-white dark:bg-[#111215] overflow-hidden" id="workspaceContainer">
-      <!-- État vide si rien n'est sélectionné -->
-      <div id="emptyWorkspace" class="flex-1 flex flex-col items-center justify-center text-zinc-400 p-8 text-center">
-        <svg class="w-12 h-12 stroke-[1.2] text-zinc-300 dark:text-zinc-700 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Aucun élément sélectionné</p>
-        <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-xs">Sélectionnez une note dans la liste ou appuyez sur <kbd class="px-1 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 text-[10px]">Ctrl+N</kbd> pour en créer une.</p>
+    <!-- COLONNE 3 : Zone de travail / Éditeur & Rendu (style Apple Notes / Obsidian) -->
+    <main class="flex-1 flex flex-col bg-white dark:bg-[#0E0F12] overflow-hidden" id="workspaceMain">
+      
+      <!-- État vide (Aucune note sélectionnée) -->
+      <div id="emptyWorkspaceView" class="flex-1 flex flex-col items-center justify-center p-8 text-center text-zinc-400 select-none">
+        <div class="w-14 h-14 rounded-2xl bg-zinc-100 dark:bg-[#161720] flex items-center justify-center mb-3 text-zinc-400 border border-zinc-200 dark:border-[#222430]">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        </div>
+        <p class="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Aucun élément sélectionné</p>
+        <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-sm">
+          Sélectionnez une note dans la colonne centrale ou appuyez sur <kbd class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-[#1A1C24] border border-zinc-200 dark:border-zinc-800 text-[10px] font-mono">Ctrl+N</kbd> pour commencer à écrire.
+        </p>
       </div>
 
-      <!-- Contenu actif (affiché dès qu'un élément est sélectionné) -->
-      <div id="activeWorkspace" class="flex-1 flex flex-col hidden overflow-hidden">
+      <!-- Vue active de l'élément sélectionné -->
+      <div id="activeWorkspaceView" class="flex-1 flex flex-col hidden overflow-hidden">
         
-        <!-- Barre d'outils de l'élément -->
-        <div class="h-11 border-b border-zinc-200 dark:border-[#222328] px-5 flex items-center justify-between shrink-0">
+        <!-- Barre d'avertissement Corbeille pour la note affichée -->
+        <div id="trashedItemWarning" class="hidden px-6 py-2.5 bg-rose-500/10 border-b border-rose-500/20 text-xs text-rose-600 dark:text-rose-400 flex items-center justify-between">
+          <span>Cet élément est actuellement dans la corbeille.</span>
           <div class="flex items-center space-x-2">
-            <span id="activeTypeBadge" class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-zinc-100 dark:bg-[#202228] text-zinc-500">Note</span>
-            <span id="activeDateLabel" class="text-xs text-zinc-400 font-mono">Modifié à l'instant</span>
+            <button onclick="restoreCurrentItem()" class="px-2.5 py-1 rounded bg-rose-500 text-white font-semibold hover:bg-rose-600 transition-colors">Restaurer</button>
+            <button onclick="deleteCurrentItemPermanently()" class="px-2.5 py-1 rounded border border-rose-500/30 hover:bg-rose-500/20 transition-colors">Supprimer définitivement</button>
+          </div>
+        </div>
+
+        <!-- Barre d'outils supérieure de l'éditeur -->
+        <div class="h-11 border-b border-zinc-200 dark:border-[#1E2026] px-6 flex items-center justify-between shrink-0 bg-white/70 dark:bg-[#0E0F12]/70 backdrop-blur-sm select-none">
+          
+          <!-- Outils de mise en forme texte pour Notes -->
+          <div id="noteFormattingToolbar" class="flex items-center space-x-1">
+            
+            <!-- Bascule Édition / Aperçu (Style Obsidian) -->
+            <div class="flex items-center bg-zinc-100 dark:bg-[#181A22] rounded-lg p-0.5 mr-2">
+              <button onclick="setViewMode('edit')" id="btnModeEdit" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-white dark:bg-[#252834] shadow-sm text-zinc-900 dark:text-white transition-colors">Éditer</button>
+              <button onclick="setViewMode('preview')" id="btnModePreview" class="px-2 py-0.5 rounded text-[11px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Aperçu</button>
+            </div>
+
+            <!-- Boutons de formatage markdown direct -->
+            <button onclick="formatSelection('bold')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] font-bold text-xs w-6 h-6 flex items-center justify-center" title="Gras (**texte**)">B</button>
+            <button onclick="formatSelection('italic')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] italic text-xs w-6 h-6 flex items-center justify-center" title="Italique (*texte*)">I</button>
+            <button onclick="formatSelection('h1')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-xs font-semibold px-1" title="Grand Titre">H1</button>
+            <button onclick="formatSelection('h2')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-xs font-semibold px-1" title="Sous-titre">H2</button>
+            <div class="h-3 w-[1px] bg-zinc-200 dark:bg-zinc-800 mx-1"></div>
+            <button onclick="formatSelection('check')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-xs px-1" title="Case à cocher cliquable (- [ ])">☑ Tâche</button>
+            <button onclick="formatSelection('bullet')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-xs px-1" title="Liste à puces">• Liste</button>
+            <button onclick="formatSelection('quote')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-xs px-1" title="Citation">“ Citation</button>
           </div>
 
+          <!-- Actions de gestion de l'élément (Épingler, Dupliquer, Exporter, Supprimer) -->
           <div class="flex items-center space-x-1">
-            <button onclick="toggleActiveFavorite()" id="activeFavBtn" class="p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-[#202228] text-zinc-400 hover:text-amber-500" title="Favori">
-              <svg id="activeFavIcon" class="w-4 h-4 fill-none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+            <!-- Épingler -->
+            <button onclick="toggleActiveFavorite()" id="btnActiveFav" class="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-zinc-400 hover:text-amber-500 transition-colors" title="Épingler en haut">
+              <svg id="iconActiveFav" class="w-4 h-4 fill-none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
             </button>
-            <button onclick="exportCurrentItem()" class="p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-[#202228] text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200" title="Exporter cet élément">
+
+            <!-- Dupliquer (Ctrl+D) -->
+            <button onclick="duplicateCurrentItem()" class="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors" title="Dupliquer la note (Ctrl+D)">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+            </button>
+
+            <!-- Exporter -->
+            <button onclick="exportCurrentItem()" class="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors" title="Exporter (Markdown / Document)">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
             </button>
-            <button onclick="deleteCurrentItem()" class="p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-[#202228] text-zinc-400 hover:text-rose-500" title="Mettre en corbeille">
+
+            <!-- Supprimer -->
+            <button onclick="deleteCurrentItem()" class="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-zinc-400 hover:text-rose-500 transition-colors" title="Mettre à la corbeille">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
           </div>
         </div>
 
-        <!-- Corps de l'élément (Édition directe) -->
-        <div class="flex-1 overflow-y-auto p-8 max-w-3xl mx-auto w-full space-y-4">
+        <!-- Zone d'écriture et de lecture centrée (distraction-free) -->
+        <div class="flex-1 overflow-y-auto px-8 py-6 max-w-3xl mx-auto w-full space-y-4">
           
-          <!-- Titre (éditable directement sans modal) -->
+          <!-- Titre (éditable directement au clavier) -->
           <input 
-            id="activeTitleInput" 
+            id="editorTitleInput" 
             type="text" 
             placeholder="Sans titre" 
-            class="w-full text-2xl font-bold bg-transparent border-0 border-b border-transparent focus:border-zinc-200 dark:focus:border-[#2A2C34] focus:outline-none px-0 py-1 tracking-tight placeholder-zinc-300 dark:placeholder-zinc-700"
-            oninput="triggerAutoSave()"
+            class="w-full text-2xl sm:text-3xl font-extrabold bg-transparent border-0 focus:outline-none tracking-tight text-zinc-900 dark:text-zinc-100 placeholder-zinc-300 dark:placeholder-zinc-700"
+            oninput="handleContentChange()"
           >
 
-          <!-- Zone Tags associés -->
-          <div class="flex items-center space-x-1.5 flex-wrap" id="activeTagsContainer">
-            <!-- Badges tags + bouton ajouter -->
+          <!-- Métadonnées et Étiquettes -->
+          <div class="flex items-center space-x-2 text-xs text-zinc-400 select-none pb-2 border-b border-zinc-100 dark:border-[#1A1C22]">
+            <span id="editorDateLabel" class="font-mono text-[11px]"></span>
+            <span>•</span>
+            <div id="editorTagsContainer" class="flex items-center space-x-1.5 flex-wrap">
+              <!-- Tags dynamiques -->
+            </div>
           </div>
 
-          <!-- Zone Contenu selon Type -->
-          <div id="activeBodyArea" class="pt-2">
-            <!-- Rendu dynamique (Textarea note, carte lien, aperçu image, fichier) -->
+          <!-- Conteneur d'édition ou aperçu -->
+          <div id="editorBodyContainer" class="pt-2">
+            <!-- Rendu dynamique (Note textarea, Note Markdown aperçu, Lien, Image, Fichier) -->
           </div>
 
+        </div>
+
+        <!-- Pied de page de l'éditeur (Compteur de mots & Statut local) -->
+        <div class="h-8 border-t border-zinc-200 dark:border-[#1E2026] px-6 flex items-center justify-between text-[11px] text-zinc-400 font-mono shrink-0 bg-zinc-50/50 dark:bg-[#101115]/50 select-none">
+          <div class="flex items-center space-x-2">
+            <span id="saveStatusIndicator" class="text-zinc-400">Enregistré</span>
+            <span class="text-zinc-300 dark:text-zinc-700">•</span>
+            <span class="text-emerald-500 font-medium">Local SQLite</span>
+          </div>
+          <span id="editorStatsCounter"></span>
         </div>
 
       </div>
@@ -269,60 +476,118 @@
 
   </div>
 
-  <!-- Modal Paramètres & Export -->
-  <div id="settingsModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white dark:bg-[#1A1B20] border border-zinc-200 dark:border-[#2A2C34] rounded-xl w-full max-w-md shadow-2xl p-5 space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-[#2A2C34]">
-        <h3 class="font-semibold text-sm">Paramètres de OneBox</h3>
-        <button onclick="closeSettingsModal()" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">✕</button>
+  <!-- ========================================== -->
+  <!-- 3. MENUS CONTEXTUELS ET MODALES DESKTOP -->
+  <!-- ========================================== -->
+
+  <!-- Menu Contextuel Clic Droit sur les notes (comme dans Obsidian / Apple Notes) -->
+  <div id="cardContextMenu" class="hidden fixed bg-white dark:bg-[#1A1C24] border border-zinc-200 dark:border-[#282B38] rounded-xl shadow-2xl py-1 text-xs z-50 w-52 text-zinc-700 dark:text-zinc-200 divide-y divide-zinc-100 dark:divide-[#252834]">
+    <div class="py-1">
+      <button onclick="contextActionPin()" class="w-full px-3 py-1.5 text-left hover:bg-zinc-100 dark:hover:bg-[#252834] flex items-center space-x-2">
+        <span id="contextPinLabel">Épingler</span>
+      </button>
+      <button onclick="contextActionDuplicate()" class="w-full px-3 py-1.5 text-left hover:bg-zinc-100 dark:hover:bg-[#252834] flex items-center space-x-2">
+        <span>Dupliquer</span>
+        <span class="ml-auto text-[10px] text-zinc-400 font-mono">Ctrl+D</span>
+      </button>
+      <button onclick="contextActionExport()" class="w-full px-3 py-1.5 text-left hover:bg-zinc-100 dark:hover:bg-[#252834] flex items-center space-x-2">
+        <span>Exporter</span>
+      </button>
+    </div>
+    <div class="py-1">
+      <button onclick="contextActionDelete()" class="w-full px-3 py-1.5 text-left hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 flex items-center space-x-2">
+        <span>Mettre à la corbeille</span>
+        <span class="ml-auto text-[10px] font-mono">Suppr</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Palette de Commandes Rapide (Ctrl+K / Ctrl+P style Raycast / Obsidian) -->
+  <div id="commandPaletteModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-24 hidden p-4">
+    <div class="bg-white dark:bg-[#16171E] border border-zinc-200 dark:border-[#262835] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+      
+      <div class="p-3 border-b border-zinc-200 dark:border-[#222430] flex items-center space-x-2">
+        <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <input 
+          id="paletteSearchInput" 
+          type="text" 
+          placeholder="Taper une commande ou chercher une note..." 
+          class="w-full bg-transparent border-0 focus:outline-none text-sm text-zinc-800 dark:text-zinc-100 placeholder-zinc-400"
+          autocomplete="off"
+        >
+        <kbd class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-[#20232E] text-zinc-400">Échap</kbd>
       </div>
 
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="block text-zinc-400 font-medium mb-1">Dossier de stockage local</label>
-          <input id="settingStoragePath" type="text" readonly class="w-full px-2.5 py-1.5 rounded bg-zinc-100 dark:bg-[#141518] border border-zinc-200 dark:border-[#2A2C34] font-mono text-[11px] text-zinc-500">
-        </div>
-
-        <div class="pt-2 border-t border-zinc-200 dark:border-[#2A2C34] space-y-2">
-          <label class="block text-zinc-400 font-medium">Sauvegardes et données</label>
-          <div class="flex space-x-2">
-            <button onclick="downloadBackup()" class="flex-1 py-1.5 px-3 rounded bg-zinc-100 dark:bg-[#24262E] hover:bg-zinc-200 dark:hover:bg-[#2C2E38] font-medium border border-zinc-200 dark:border-[#30323C] transition-colors">
-              Exporter archive (ZIP)
-            </button>
-            <label class="flex-1 py-1.5 px-3 rounded bg-zinc-100 dark:bg-[#24262E] hover:bg-zinc-200 dark:hover:bg-[#2C2E38] font-medium border border-zinc-200 dark:border-[#30323C] text-center cursor-pointer transition-colors">
-              <span>Restaurer (JSON)</span>
-              <input type="file" accept=".json" onchange="restoreBackupFile(event)" class="hidden">
-            </label>
-          </div>
-        </div>
-
-        <div class="pt-3 border-t border-zinc-200 dark:border-[#2A2C34] text-[11px] text-zinc-500 space-y-1">
-          <p>Application locale autonome • Licence Apache 2.0</p>
-          <p>Toutes vos données restent sur votre ordinateur.</p>
-        </div>
-      </div>
-
-      <div class="flex justify-end pt-2">
-        <button onclick="closeSettingsModal()" class="px-3 py-1.5 rounded text-xs font-medium bg-brand text-white">Fermer</button>
+      <div id="paletteResultsList" class="max-h-80 overflow-y-auto divide-y divide-zinc-100 dark:divide-[#1F212B] p-1 text-xs">
+        <!-- Rendu dynamique des actions et notes -->
       </div>
     </div>
   </div>
 
-  <!-- Notification Toast discrète -->
-  <div id="toast" class="fixed bottom-4 right-4 px-3.5 py-2 rounded-lg bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 text-xs font-medium shadow-xl opacity-0 pointer-events-none transition-all duration-200 z-50">
-    <span id="toastText">Enregistré</span>
+  <!-- Modal Paramètres & Sauvegardes -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-[#16171E] border border-zinc-200 dark:border-[#262835] rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-100">
+      <div class="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-[#222430]">
+        <h3 class="font-bold text-sm">Paramètres & Sauvegardes</h3>
+        <button onclick="closeSettingsModal()" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-white">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block text-zinc-400 font-medium mb-1.5">Emplacement de stockage local</label>
+          <input id="settingStoragePath" type="text" readonly class="w-full px-3 py-2 rounded-lg bg-zinc-100 dark:bg-[#1C1E26] border border-zinc-200 dark:border-[#262933] font-mono text-[11px] text-zinc-500">
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#1A1C24] border border-zinc-200 dark:border-[#262833] space-y-2.5">
+          <p class="font-semibold text-zinc-700 dark:text-zinc-200">Sauvegardes de vos données</p>
+          <p class="text-zinc-400 text-[11px]">Exportez ou restaurez l'intégralité de vos notes, liens et pièces jointes en format ouvert.</p>
+          
+          <div class="flex space-x-2 pt-1">
+            <button onclick="downloadBackupZip()" class="flex-1 py-2 px-3 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold transition-colors text-center shadow-sm">
+              Exporter en ZIP
+            </button>
+            <label class="flex-1 py-2 px-3 rounded-lg bg-white dark:bg-[#22242E] hover:bg-zinc-100 dark:hover:bg-[#282B38] border border-zinc-300 dark:border-[#303340] font-semibold text-center cursor-pointer transition-colors text-zinc-700 dark:text-zinc-200">
+              <span>Restaurer JSON</span>
+              <input type="file" accept=".json" onchange="handleRestoreFile(event)" class="hidden">
+            </label>
+          </div>
+        </div>
+
+        <div class="pt-2 text-[11px] text-zinc-500 space-y-1">
+          <p>Application locale sécurisée • Licence Apache 2.0</p>
+          <p>Zéro publicité, zéro traceur. Vos données vous appartiennent.</p>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-zinc-200 dark:border-[#222430]">
+        <button onclick="closeSettingsModal()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-zinc-200 dark:bg-[#252833] hover:bg-zinc-300 dark:hover:bg-[#2F3240] transition-colors">Fermer</button>
+      </div>
+    </div>
   </div>
 
+  <!-- Toast Notification Discret -->
+  <div id="toast" class="fixed bottom-5 right-5 px-4 py-2 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 text-xs font-semibold shadow-2xl opacity-0 pointer-events-none transition-all duration-200 z-50 flex items-center space-x-2">
+    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+    <span id="toastMessage">Enregistré</span>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 4. LOGIQUE CLIENT REACTIVE PURE VANILLA JS -->
+  <!-- ========================================== -->
   <script>
     let activeFilter = 'inbox';
+    let activeType = 'all';
     let activeTagId = null;
     let searchQuery = '';
     let items = [];
     let tags = [];
     let activeItem = null;
-    let saveTimeout = null;
+    let autoSaveTimer = null;
+    let isSidebarOpen = true;
+    let viewMode = 'edit'; // 'edit' ou 'preview'
+    let contextMenuItemId = null;
 
-    // Gestion du Thème (Dark / Light)
+    // --- Gestion du Thème ---
     function initTheme() {
       const isDark = localStorage.getItem('onebox_theme') !== 'light';
       document.documentElement.classList.toggle('dark', isDark);
@@ -337,14 +602,24 @@
       document.getElementById('themeIconMoon').classList.toggle('hidden', isDark);
     }
 
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      document.getElementById('toastText').innerText = msg;
-      t.classList.remove('opacity-0', 'pointer-events-none');
-      setTimeout(() => t.classList.add('opacity-0', 'pointer-events-none'), 2200);
+    function toggleSidebar() {
+      const sb = document.getElementById('sidebarNav');
+      isSidebarOpen = !isSidebarOpen;
+      if (isSidebarOpen) {
+        sb.classList.remove('-ml-60');
+      } else {
+        sb.classList.add('-ml-60');
+      }
     }
 
-    // Chargement des données
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMessage').innerText = msg;
+      t.classList.remove('opacity-0', 'pointer-events-none');
+      setTimeout(() => t.classList.add('opacity-0', 'pointer-events-none'), 2000);
+    }
+
+    // --- Chargement des Données ---
     async function loadTags() {
       try {
         const res = await fetch('/api/tags');
@@ -352,23 +627,26 @@
         tags = data.tags || [];
         renderTagsNav();
       } catch (err) {
-        console.error('Erreur chargement tags:', err);
+        console.error('Erreur tags:', err);
       }
     }
 
     function renderTagsNav() {
-      const container = document.getElementById('tagsNavContainer');
+      const container = document.getElementById('tagsListNav');
       if (tags.length === 0) {
         container.innerHTML = '<span class="text-[11px] text-zinc-400 px-2.5 italic">Aucune étiquette</span>';
         return;
       }
       container.innerHTML = tags.map(tag => `
-        <div onclick="filterByTag('${tag.id}')" class="group flex items-center justify-between px-2.5 py-1 rounded-md text-xs cursor-pointer ${activeTagId === tag.id ? 'bg-zinc-200 dark:bg-[#22242B] font-semibold text-zinc-900 dark:text-white' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#1E2026]'}">
-          <div class="flex items-center space-x-1.5 truncate">
+        <div onclick="filterByTag('${tag.id}')" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer ${activeTagId === tag.id ? 'bg-zinc-200/80 dark:bg-[#1E2129] font-bold text-zinc-900 dark:text-white' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#181A20]'}">
+          <div class="flex items-center space-x-2 truncate">
             <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${tag.color || '#0066FF'}"></span>
             <span class="truncate">${escapeHtml(tag.name)}</span>
           </div>
-          <button onclick="event.stopPropagation(); deleteTag('${tag.id}')" class="opacity-0 group-hover:opacity-100 hover:text-rose-500 text-zinc-400 text-xs px-1">✕</button>
+          <div class="flex items-center space-x-1">
+            <span class="text-[10px] text-zinc-400 opacity-60 group-hover:opacity-0">${tag.count || 0}</span>
+            <button onclick="event.stopPropagation(); deleteTag('${tag.id}')" class="opacity-0 group-hover:opacity-100 hover:text-rose-500 text-zinc-400 text-xs px-1">✕</button>
+          </div>
         </div>
       `).join('');
     }
@@ -381,9 +659,10 @@
         else if (activeFilter === 'favorites') params.append('favorites', 'true');
         else if (activeFilter === 'notes') params.append('type', 'note');
         else if (activeFilter === 'links') params.append('type', 'link');
-        else if (activeFilter === 'files') {
-          // Affiche fichiers ou images
-          params.append('type', 'file');
+        else if (activeFilter === 'files') params.append('type', 'file');
+
+        if (activeType !== 'all') {
+          params.set('type', activeType);
         }
 
         if (activeTagId) params.append('tagId', activeTagId);
@@ -394,7 +673,12 @@
         renderItemsList();
         updateCounts();
 
-        // Si l'élément actif n'est plus dans la liste, désélectionner
+        // Afficher ou masquer le bandeau vider la corbeille
+        const trashBanner = document.getElementById('trashBannerHeader');
+        if (trashBanner) {
+          trashBanner.classList.toggle('hidden', activeFilter !== 'trash' || items.length === 0);
+        }
+
         if (activeItem && !items.some(i => i.id === activeItem.id)) {
           if (items.length > 0) {
             selectItem(items[0].id);
@@ -403,65 +687,111 @@
           }
         }
       } catch (err) {
-        console.error('Erreur chargement items:', err);
+        console.error('Erreur items:', err);
       }
     }
 
     function renderItemsList() {
-      const container = document.getElementById('itemsList');
+      const container = document.getElementById('itemsListContainer');
       if (items.length === 0) {
         container.innerHTML = `
-          <div class="p-6 text-center text-zinc-400 text-xs">
-            Aucun élément trouvé
+          <div class="p-8 text-center text-zinc-400 text-xs space-y-1">
+            <p class="font-medium text-zinc-500">Aucun élément trouvé</p>
+            <p class="text-[11px] text-zinc-400">Créez une note avec <kbd class="px-1 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 font-mono">Ctrl+N</kbd>.</p>
           </div>
         `;
         return;
       }
 
-      container.innerHTML = items.map(item => {
-        const isSelected = activeItem && activeItem.id === item.id;
-        const isFav = item.favorite === 1;
-        const dateStr = formatRelativeDate(item.updated_at || item.created_at);
+      const pinnedItems = items.filter(i => i.favorite === 1 && activeFilter !== 'favorites' && activeFilter !== 'trash');
+      const regularItems = items.filter(i => i.favorite !== 1 || activeFilter === 'favorites' || activeFilter === 'trash');
 
-        return `
-          <div onclick="selectItem('${item.id}')" class="p-3 cursor-pointer transition-colors ${isSelected ? 'bg-zinc-100 dark:bg-[#1E2026] border-l-2 border-brand' : 'hover:bg-zinc-50 dark:hover:bg-[#18191E]'}">
-            <div class="flex items-start justify-between">
-              <h4 class="text-xs font-semibold truncate flex-1 ${isSelected ? 'text-zinc-900 dark:text-white' : 'text-zinc-700 dark:text-zinc-300'}">
-                ${escapeHtml(item.title || 'Sans titre')}
-              </h4>
-              ${isFav ? '<span class="text-amber-500 text-xs ml-1 shrink-0">★</span>' : ''}
-            </div>
-            
-            <p class="text-[11px] text-zinc-400 dark:text-zinc-500 line-clamp-2 mt-1 leading-snug">
-              ${escapeHtml(item.snippet || (item.note ? item.note.body_text : (item.description || '')))}
-            </p>
+      let html = '';
 
-            <div class="mt-2 flex items-center justify-between text-[10px] text-zinc-400">
-              <span>${dateStr}</span>
-              <span class="uppercase text-[9px] font-mono px-1 py-0.2 rounded bg-zinc-200/60 dark:bg-zinc-800">${item.type}</span>
+      if (pinnedItems.length > 0) {
+        html += `
+          <div class="px-3 pt-2.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Épinglés</div>
+          ${pinnedItems.map(item => renderItemCard(item)).join('')}
+          <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Notes récentes</div>
+        `;
+      }
+
+      html += regularItems.map(item => renderItemCard(item)).join('');
+      container.innerHTML = html;
+    }
+
+    function renderItemCard(item) {
+      const isSelected = activeItem && activeItem.id === item.id;
+      const dateStr = formatRelativeDate(item.updated_at || item.created_at);
+      const isFav = item.favorite === 1;
+
+      const typeLabels = {
+        note: 'Note',
+        link: 'Lien',
+        file: 'Fichier',
+        image: 'Image'
+      };
+
+      const titleHtml = highlightText(escapeHtml(item.title || 'Sans titre'), searchQuery);
+      const snippetRaw = item.snippet || (item.note ? item.note.body_text : (item.description || ''));
+      const snippetHtml = highlightText(escapeHtml(snippetRaw), searchQuery);
+
+      return `
+        <div 
+          onclick="selectItem('${item.id}')" 
+          oncontextmenu="handleCardContextMenu(event, '${item.id}')"
+          class="item-card p-3.5 cursor-pointer transition-all select-none ${isSelected ? 'bg-brand/10 dark:bg-brand/15 border-l-2 border-brand' : 'hover:bg-zinc-50 dark:hover:bg-[#16171D]'}"
+          data-id="${item.id}"
+        >
+          <div class="flex items-start justify-between space-x-2">
+            <h4 class="text-xs font-bold truncate flex-1 ${isSelected ? 'text-brand dark:text-blue-400' : 'text-zinc-800 dark:text-zinc-200'}">
+              ${titleHtml}
+            </h4>
+            <div class="flex items-center space-x-1 shrink-0">
+              ${isFav ? '<span class="text-amber-500 text-xs">★</span>' : ''}
+              <span class="text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded bg-zinc-200/70 dark:bg-[#1E2028] text-zinc-500">
+                ${typeLabels[item.type] || item.type}
+              </span>
             </div>
           </div>
-        `;
-      }).join('');
+          
+          <p class="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-2 mt-1 leading-snug">
+            ${snippetHtml}
+          </p>
+
+          <div class="mt-2 flex items-center justify-between text-[10px] text-zinc-400">
+            <span>${dateStr}</span>
+            <div class="flex items-center space-x-1">
+              ${(item.tags || []).slice(0, 2).map(t => `<span class="px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-[#1B1D25] text-[10px]">#${escapeHtml(t.name)}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     async function selectItem(id) {
       try {
         const res = await fetch(`/api/items/${id}`);
+        if (!res.ok) return;
         const item = await res.json();
         activeItem = item;
 
-        document.getElementById('emptyWorkspace').classList.add('hidden');
-        document.getElementById('activeWorkspace').classList.remove('hidden');
+        document.getElementById('emptyWorkspaceView').classList.add('hidden');
+        document.getElementById('activeWorkspaceView').classList.remove('hidden');
+
+        // Mettre à jour l'avertissement si corbeille
+        const trashedWarning = document.getElementById('trashedItemWarning');
+        trashedWarning.classList.toggle('hidden', !item.deleted_at);
 
         // Métadonnées
-        document.getElementById('activeTypeBadge').innerText = item.type;
-        document.getElementById('activeDateLabel').innerText = new Date(item.updated_at || item.created_at).toLocaleString();
-        document.getElementById('activeTitleInput').value = item.title || '';
+        document.getElementById('editorDateLabel').innerText = `Modifié le ${new Date(item.updated_at || item.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}`;
+        document.getElementById('editorTitleInput').value = item.title || '';
 
-        // Bouton favori
-        const favIcon = document.getElementById('activeFavIcon');
-        const favBtn = document.getElementById('activeFavBtn');
+        // Outils pour notes
+        document.getElementById('noteFormattingToolbar').classList.toggle('hidden', item.type !== 'note');
+
+        // Icône Favori
+        const favIcon = document.getElementById('iconActiveFav');
         if (item.favorite === 1) {
           favIcon.classList.remove('fill-none');
           favIcon.classList.add('fill-amber-500', 'text-amber-500');
@@ -470,110 +800,242 @@
           favIcon.classList.add('fill-none');
         }
 
-        // Tags
-        renderActiveTags(item);
-
-        // Contenu
-        const bodyArea = document.getElementById('activeBodyArea');
-        if (item.type === 'note') {
-          bodyArea.innerHTML = `
-            <textarea 
-              id="activeNoteBody" 
-              rows="16" 
-              placeholder="Écrivez votre texte ou Markdown ici..." 
-              class="w-full bg-transparent text-sm font-sans leading-relaxed border-0 focus:outline-none resize-none placeholder-zinc-400 dark:placeholder-zinc-600"
-              oninput="triggerAutoSave()"
-            >${escapeHtml(item.note ? item.note.body_text : '')}</textarea>
-          `;
-        } else if (item.type === 'link') {
-          bodyArea.innerHTML = `
-            <div class="p-4 rounded-lg border border-zinc-200 dark:border-[#262830] bg-zinc-50 dark:bg-[#16171B] space-y-3">
-              <div>
-                <span class="text-[10px] font-semibold text-zinc-400 uppercase">Adresse URL</span>
-                <p class="text-xs font-mono text-brand truncate mt-0.5">${escapeHtml(item.link ? item.link.url : '')}</p>
-              </div>
-              <div>
-                <a href="${escapeHtml(item.link ? item.link.url : '#')}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded bg-brand text-white text-xs font-medium hover:bg-brand-hover transition-colors">
-                  <span>Ouvrir dans le navigateur</span>
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                </a>
-              </div>
-              ${item.description ? `
-                <div class="pt-2 border-t border-zinc-200 dark:border-[#262830]">
-                  <p class="text-xs text-zinc-500">${escapeHtml(item.description)}</p>
-                </div>
-              ` : ''}
-            </div>
-          `;
-        } else if (item.type === 'image') {
-          bodyArea.innerHTML = `
-            <div class="space-y-3">
-              <div class="rounded-lg overflow-hidden border border-zinc-200 dark:border-[#262830] bg-black/30 flex items-center justify-center p-2">
-                <img src="/api/attachments/${item.id}" alt="${escapeHtml(item.title)}" class="max-h-96 object-contain rounded">
-              </div>
-              <p class="text-xs text-zinc-400 font-mono">${item.file ? escapeHtml(item.file.display_name) : ''}</p>
-            </div>
-          `;
-        } else if (item.type === 'file') {
-          bodyArea.innerHTML = `
-            <div class="p-5 rounded-lg border border-zinc-200 dark:border-[#262830] bg-zinc-50 dark:bg-[#16171B] space-y-3">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h4 class="text-sm font-semibold">${escapeHtml(item.file ? item.file.display_name : item.title)}</h4>
-                  <p class="text-xs text-zinc-400 mt-0.5">${item.file ? Math.round(item.file.size_bytes / 1024) + ' Ko' : ''} • ${item.file ? item.file.mime_type : ''}</p>
-                </div>
-                <a href="/api/attachments/${item.id}" download="${escapeHtml(item.file ? item.file.display_name : 'document')}" class="px-3 py-1.5 rounded text-xs font-medium bg-zinc-200 dark:bg-[#252730] hover:bg-zinc-300 dark:hover:bg-[#2E303C] transition-colors">
-                  Télécharger
-                </a>
-              </div>
-              <p class="text-[10px] font-mono text-zinc-400 break-all">SHA-256 : ${item.file ? item.file.checksum : ''}</p>
-            </div>
-          `;
-        }
-
+        renderEditorTags(item);
+        renderEditorBody(item);
         renderItemsList();
       } catch (err) {
-        console.error('Erreur sélection item:', err);
+        console.error('Erreur sélection:', err);
       }
     }
 
-    function renderActiveTags(item) {
-      const container = document.getElementById('activeTagsContainer');
-      const itemTagIds = new Set((item.tags || []).map(t => t.id));
+    function renderEditorBody(item) {
+      const bodyContainer = document.getElementById('editorBodyContainer');
 
-      const tagsHtml = (item.tags || []).map(t => `
-        <span class="inline-flex items-center space-x-1 text-[11px] px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-[#202228] text-zinc-600 dark:text-zinc-300">
-          <span>#${escapeHtml(t.name)}</span>
-          <button onclick="removeTagFromActive('${t.id}')" class="text-zinc-400 hover:text-rose-500 ml-0.5">✕</button>
-        </span>
-      `).join('');
-
-      container.innerHTML = `
-        ${tagsHtml}
-        <button onclick="promptAddTagToActive()" class="text-[11px] text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 px-1.5 py-0.5 rounded border border-dashed border-zinc-300 dark:border-zinc-700">
-          + Étiquette
-        </button>
-      `;
+      if (item.type === 'note') {
+        const noteText = item.note ? item.note.body_text : '';
+        if (viewMode === 'preview') {
+          bodyContainer.innerHTML = `
+            <div class="markdown-rendered text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+              ${renderMarkdownHtml(noteText)}
+            </div>
+          `;
+        } else {
+          bodyContainer.innerHTML = `
+            <textarea 
+              id="activeNoteEditor" 
+              rows="22" 
+              placeholder="Écrivez librement en Markdown... Ex: **gras**, *italique*, - [ ] Tâche à accomplir, # Titre." 
+              class="w-full bg-transparent text-sm prose-editor leading-relaxed border-0 focus:outline-none resize-none placeholder-zinc-300 dark:placeholder-zinc-700 text-zinc-800 dark:text-zinc-200"
+              oninput="handleContentChange()"
+            >${escapeHtml(noteText)}</textarea>
+          `;
+        }
+        updateWordStats(noteText);
+      } else if (item.type === 'link') {
+        bodyContainer.innerHTML = `
+          <div class="p-6 rounded-2xl border border-zinc-200 dark:border-[#222430] bg-zinc-50 dark:bg-[#14151C] space-y-4">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Lien web enregistré</span>
+                <a href="${escapeHtml(item.link ? item.link.url : '#')}" target="_blank" rel="noopener noreferrer" class="text-sm font-bold text-brand hover:underline block mt-0.5 break-all">
+                  ${escapeHtml(item.link ? item.link.url : '')}
+                </a>
+              </div>
+              <div class="flex items-center space-x-2">
+                <button onclick="navigator.clipboard.writeText('${escapeHtml(item.link ? item.link.url : '')}'); showToast('Lien copié');" class="px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-xs font-medium transition-colors">
+                  Copier l'URL
+                </button>
+                <a href="${escapeHtml(item.link ? item.link.url : '#')}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-hover text-white text-xs font-semibold shrink-0 transition-colors">
+                  Ouvrir le lien
+                </a>
+              </div>
+            </div>
+            ${item.description ? `<p class="text-xs text-zinc-500 dark:text-zinc-400 border-t border-zinc-200 dark:border-[#20222C] pt-3">${escapeHtml(item.description)}</p>` : ''}
+          </div>
+        `;
+        document.getElementById('editorStatsCounter').innerText = 'Lien web';
+      } else if (item.type === 'image') {
+        bodyContainer.innerHTML = `
+          <div class="space-y-4">
+            <div class="rounded-2xl overflow-hidden border border-zinc-200 dark:border-[#222430] bg-black/40 flex items-center justify-center p-3">
+              <img src="/api/attachments/${item.id}" alt="${escapeHtml(item.title)}" class="max-h-[32rem] w-auto object-contain rounded-xl shadow-lg">
+            </div>
+            <div class="flex items-center justify-between text-xs text-zinc-400 font-mono px-2">
+              <span>${item.file ? escapeHtml(item.file.display_name) : ''}</span>
+              <a href="/api/attachments/${item.id}" download="${escapeHtml(item.file ? item.file.display_name : 'image.jpg')}" class="text-brand hover:underline">Télécharger l'image</a>
+            </div>
+          </div>
+        `;
+        document.getElementById('editorStatsCounter').innerText = item.file ? `${Math.round(item.file.size_bytes / 1024)} Ko` : 'Image';
+      } else if (item.type === 'file') {
+        bodyContainer.innerHTML = `
+          <div class="p-6 rounded-2xl border border-zinc-200 dark:border-[#222430] bg-zinc-50 dark:bg-[#14151C] space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-base font-bold">${escapeHtml(item.file ? item.file.display_name : item.title)}</h4>
+                <p class="text-xs text-zinc-400 mt-1">${item.file ? Math.round(item.file.size_bytes / 1024) + ' Ko • ' + item.file.mime_type : ''}</p>
+              </div>
+              <a href="/api/attachments/${item.id}" download="${escapeHtml(item.file ? item.file.display_name : 'document')}" class="px-4 py-2 rounded-xl text-xs font-bold bg-brand hover:bg-brand-hover text-white transition-colors shadow-sm">
+                Télécharger le document
+              </a>
+            </div>
+            <div class="border-t border-zinc-200 dark:border-[#20222C] pt-3 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+              <span class="break-all">SHA-256 : ${item.file ? item.file.checksum : ''}</span>
+              <button onclick="navigator.clipboard.writeText('${item.file ? item.file.checksum : ''}'); showToast('Checksum copié');" class="hover:text-zinc-200 ml-2 shrink-0">Copier</button>
+            </div>
+          </div>
+        `;
+        document.getElementById('editorStatsCounter').innerText = 'Fichier';
+      }
     }
 
-    function closeWorkspace() {
-      activeItem = null;
-      document.getElementById('activeWorkspace').classList.add('hidden');
-      document.getElementById('emptyWorkspace').classList.remove('hidden');
+    function setViewMode(mode) {
+      viewMode = mode;
+      document.getElementById('btnModeEdit').className = mode === 'edit'
+        ? 'px-2 py-0.5 rounded text-[11px] font-semibold bg-white dark:bg-[#252834] shadow-sm text-zinc-900 dark:text-white transition-colors'
+        : 'px-2 py-0.5 rounded text-[11px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors';
+      document.getElementById('btnModePreview').className = mode === 'preview'
+        ? 'px-2 py-0.5 rounded text-[11px] font-semibold bg-white dark:bg-[#252834] shadow-sm text-zinc-900 dark:text-white transition-colors'
+        : 'px-2 py-0.5 rounded text-[11px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors';
+      if (activeItem) renderEditorBody(activeItem);
     }
 
-    // Sauvegarde automatique en direct
-    function triggerAutoSave() {
-      clearTimeout(saveTimeout);
-      saveTimeout = setTimeout(saveActiveItemDirectly, 400);
+    // --- Parser Markdown Riche avec Tâches Interactives ---
+    function renderMarkdownHtml(md) {
+      if (!md) return '<p class="italic text-zinc-400">Note vide. Cliquez sur "Éditer" pour rédiger.</p>';
+
+      const lines = md.split('\n');
+      let html = '';
+      let inList = false;
+      let listType = 'ul';
+      let inPre = false;
+      let preContent = '';
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Blocs de code ```
+        if (line.trim().startsWith('```')) {
+          if (inPre) {
+            html += `<pre><code>${escapeHtml(preContent)}</code></pre>`;
+            inPre = false;
+            preContent = '';
+          } else {
+            inPre = true;
+            preContent = '';
+          }
+          continue;
+        }
+
+        if (inPre) {
+          preContent += (preContent ? '\n' : '') + line;
+          continue;
+        }
+
+        // Tâches interactives (- [ ] ou - [x])
+        const taskMatch = line.match(/^(\s*)-\s+\[([ xX])\]\s+(.*)$/);
+        if (taskMatch) {
+          const isDone = taskMatch[2].toLowerCase() === 'x';
+          const taskText = parseInlineMarkdown(taskMatch[3]);
+          html += `
+            <div class="task-item" onclick="toggleTaskInMarkdown(${i})">
+              <input type="checkbox" ${isDone ? 'checked' : ''} class="task-checkbox" onclick="event.stopPropagation(); toggleTaskInMarkdown(${i})">
+              <span class="${isDone ? 'task-done' : ''}">${taskText}</span>
+            </div>
+          `;
+          continue;
+        }
+
+        // Titres H1, H2, H3
+        if (line.startsWith('# ')) {
+          html += `<h1>${parseInlineMarkdown(line.substring(2))}</h1>`;
+          continue;
+        }
+        if (line.startsWith('## ')) {
+          html += `<h2>${parseInlineMarkdown(line.substring(3))}</h2>`;
+          continue;
+        }
+        if (line.startsWith('### ')) {
+          html += `<h3>${parseInlineMarkdown(line.substring(4))}</h3>`;
+          continue;
+        }
+
+        // Citations
+        if (line.startsWith('> ')) {
+          html += `<blockquote>${parseInlineMarkdown(line.substring(2))}</blockquote>`;
+          continue;
+        }
+
+        // Liste à puces simples
+        if (line.startsWith('- ') || line.startsWith('* ')) {
+          html += `<ul><li>${parseInlineMarkdown(line.substring(2))}</li></ul>`;
+          continue;
+        }
+
+        // Paragraphe classique
+        if (line.trim().length === 0) {
+          html += '<br>';
+        } else {
+          html += `<p>${parseInlineMarkdown(line)}</p>`;
+        }
+      }
+
+      return html;
+    }
+
+    function parseInlineMarkdown(text) {
+      let t = escapeHtml(text);
+      // Gras **texte**
+      t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      // Italique *texte*
+      t = t.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      // Code `code`
+      t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+      // Liens [texte](url)
+      t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+      return t;
+    }
+
+    // Basculer l'état d'une case à cocher dans le texte Markdown en cliquant dessus
+    async function toggleTaskInMarkdown(lineIndex) {
+      if (!activeItem || !activeItem.note) return;
+      const lines = activeItem.note.body_text.split('\n');
+      if (lineIndex < 0 || lineIndex >= lines.length) return;
+
+      const line = lines[lineIndex];
+      if (line.includes('- [ ]')) {
+        lines[lineIndex] = line.replace('- [ ]', '- [x]');
+      } else if (line.includes('- [x]') || line.includes('- [X]')) {
+        lines[lineIndex] = line.replace(/- \[[xX]\]/, '- [ ]');
+      }
+
+      activeItem.note.body_text = lines.join('\n');
+      renderEditorBody(activeItem);
+      await saveActiveItemDirectly();
+    }
+
+    // --- Saisie et Sauvegarde Automatique ---
+    function handleContentChange() {
+      const status = document.getElementById('saveStatusIndicator');
+      status.innerText = 'Enregistrement...';
+      
+      const noteEl = document.getElementById('activeNoteEditor');
+      if (noteEl) updateWordStats(noteEl.value);
+
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(saveActiveItemDirectly, 300);
     }
 
     async function saveActiveItemDirectly() {
       if (!activeItem) return;
-      const title = document.getElementById('activeTitleInput').value.trim() || 'Sans titre';
+      const title = document.getElementById('editorTitleInput').value.trim() || 'Sans titre';
       let noteBody = undefined;
-      const noteEl = document.getElementById('activeNoteBody');
-      if (noteEl) noteBody = noteEl.value;
+      const noteEl = document.getElementById('activeNoteEditor');
+      if (noteEl) {
+        noteBody = noteEl.value;
+      } else if (activeItem.note) {
+        noteBody = activeItem.note.body_text;
+      }
 
       try {
         const res = await fetch(`/api/items/${activeItem.id}`, {
@@ -586,14 +1048,49 @@
           if (noteBody !== undefined && activeItem.note) {
             activeItem.note.body_text = noteBody;
           }
+          document.getElementById('saveStatusIndicator').innerText = 'Enregistré';
           renderItemsList();
         }
       } catch (err) {
-        console.error(err);
+        document.getElementById('saveStatusIndicator').innerText = 'Erreur locale';
       }
     }
 
-    // Créer une nouvelle note immédiatement (style Apple Notes / Obsidian)
+    function updateWordStats(text) {
+      const counter = document.getElementById('editorStatsCounter');
+      if (!counter) return;
+      const words = text && text.trim() ? text.trim().split(/\s+/).length : 0;
+      const chars = text ? text.length : 0;
+      const readMin = Math.max(1, Math.ceil(words / 200));
+      counter.innerText = `${words} mot${words > 1 ? 's' : ''} • ${chars} car. • ${readMin} min de lecture`;
+    }
+
+    function formatSelection(type) {
+      if (viewMode === 'preview') setViewMode('edit');
+      const textarea = document.getElementById('activeNoteEditor');
+      if (!textarea) return;
+
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selText = textarea.value.substring(start, end);
+      let replacement = '';
+
+      switch (type) {
+        case 'bold': replacement = `**${selText || 'texte en gras'}**`; break;
+        case 'italic': replacement = `*${selText || 'texte en italique'}*`; break;
+        case 'h1': replacement = `\n# ${selText || 'Grand titre'}\n`; break;
+        case 'h2': replacement = `\n## ${selText || 'Sous-titre'}\n`; break;
+        case 'check': replacement = `\n- [ ] ${selText || 'Nouvelle tâche'}`; break;
+        case 'bullet': replacement = `\n- ${selText || 'Élément'}`; break;
+        case 'quote': replacement = `\n> ${selText || 'Citation'}\n`; break;
+      }
+
+      textarea.setRangeText(replacement, start, end, 'end');
+      handleContentChange();
+      textarea.focus();
+    }
+
+    // --- Création de Notes, Liens, Fichiers ---
     async function createNewNote() {
       try {
         const res = await fetch('/api/items/note', {
@@ -605,7 +1102,7 @@
         await loadItems();
         selectItem(note.id);
         setTimeout(() => {
-          const titleInput = document.getElementById('activeTitleInput');
+          const titleInput = document.getElementById('editorTitleInput');
           if (titleInput) {
             titleInput.focus();
             titleInput.select();
@@ -616,9 +1113,9 @@
       }
     }
 
-    async function openAddLinkPrompt() {
-      toggleQuickMenu();
-      const url = prompt('Collez l\'adresse URL :');
+    async function promptAddLink() {
+      toggleQuickAddMenu();
+      const url = prompt('Adresse URL du lien :');
       if (!url) return;
       try {
         const res = await fetch('/api/items/link', {
@@ -630,6 +1127,9 @@
           const item = await res.json();
           await loadItems();
           selectItem(item.id);
+        } else {
+          const err = await res.json();
+          alert(err.error || 'Erreur lors de l\'enregistrement');
         }
       } catch (err) {
         console.error(err);
@@ -637,12 +1137,13 @@
     }
 
     async function uploadDirectFile(event) {
-      toggleQuickMenu();
+      toggleQuickAddMenu();
       const file = event.target.files && event.target.files[0];
       if (!file) return;
 
       const fd = new FormData();
       fd.append('file', file);
+      showToast('Importation...');
 
       try {
         const res = await fetch('/api/items/file', {
@@ -651,6 +1152,7 @@
         });
         if (res.ok) {
           const item = await res.json();
+          showToast('Fichier importé avec succès');
           await loadItems();
           selectItem(item.id);
         }
@@ -661,20 +1163,71 @@
       }
     }
 
-    function toggleQuickMenu() {
-      document.getElementById('quickMenu').classList.toggle('hidden');
+    // Importer un fichier Markdown .md directement comme note
+    async function importMarkdownFile(event) {
+      toggleQuickAddMenu();
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const baseName = file.name.replace(/\.[^/.]+$/, '');
+        let title = baseName;
+
+        // Détecter si première ligne est un titre # Titre
+        const firstLine = text.split('\n')[0].trim();
+        if (firstLine.startsWith('# ')) {
+          title = firstLine.substring(2).trim();
+        }
+
+        const res = await fetch('/api/items/note', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, body_text: text })
+        });
+        if (res.ok) {
+          const note = await res.json();
+          showToast('Note Markdown importée');
+          await loadItems();
+          selectItem(note.id);
+        }
+      } catch (err) {
+        alert('Erreur lors de l\'import Markdown: ' + err.message);
+      } finally {
+        event.target.value = '';
+      }
+    }
+
+    function toggleQuickAddMenu() {
+      document.getElementById('quickAddMenu').classList.toggle('hidden');
+    }
+
+    // --- Duplication et Gestion ---
+    async function duplicateCurrentItem() {
+      if (!activeItem) return;
+      try {
+        const res = await fetch(`/api/items/${activeItem.id}/duplicate`, { method: 'POST' });
+        if (res.ok) {
+          const dup = await res.json();
+          showToast('Note dupliquée');
+          await loadItems();
+          selectItem(dup.id);
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     async function toggleActiveFavorite() {
       if (!activeItem) return;
-      const newStatus = activeItem.favorite === 1 ? false : true;
+      const newFav = activeItem.favorite === 1 ? false : true;
       try {
         await fetch(`/api/items/${activeItem.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ favorite: newStatus })
+          body: JSON.stringify({ favorite: newFav })
         });
-        activeItem.favorite = newStatus ? 1 : 0;
+        activeItem.favorite = newFav ? 1 : 0;
         selectItem(activeItem.id);
         loadItems();
       } catch (err) {
@@ -685,8 +1238,9 @@
     async function deleteCurrentItem() {
       if (!activeItem) return;
       if (activeFilter === 'trash') {
-        if (!confirm('Supprimer définitivement cet élément ?')) return;
+        if (!confirm('Supprimer définitivement cet élément ? Cette action est irréversible.')) return;
         await fetch(`/api/items/${activeItem.id}`, { method: 'DELETE' });
+        showToast('Supprimé définitivement');
       } else {
         await fetch(`/api/items/${activeItem.id}/trash`, { method: 'POST' });
         showToast('Déplacé dans la corbeille');
@@ -695,10 +1249,40 @@
       loadItems();
     }
 
+    async function restoreCurrentItem() {
+      if (!activeItem) return;
+      await fetch(`/api/items/${activeItem.id}/restore`, { method: 'POST' });
+      showToast('Élément restauré');
+      loadItems();
+      selectItem(activeItem.id);
+    }
+
+    async function deleteCurrentItemPermanently() {
+      if (!activeItem) return;
+      if (!confirm('Supprimer définitivement cet élément ?')) return;
+      await fetch(`/api/items/${activeItem.id}`, { method: 'DELETE' });
+      showToast('Supprimé définitivement');
+      closeWorkspace();
+      loadItems();
+    }
+
+    async function emptyEntireTrash() {
+      if (!confirm('Vider l\'intégralité de la corbeille ? Tous les fichiers seront supprimés du disque.')) return;
+      try {
+        const res = await fetch('/api/trash/empty', { method: 'POST' });
+        const data = await res.json();
+        showToast(`${data.count || 0} éléments purgés`);
+        closeWorkspace();
+        loadItems();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
     async function exportCurrentItem() {
       if (!activeItem) return;
       if (activeItem.type === 'note' && activeItem.note) {
-        const blob = new Blob([activeItem.note.body_text], { type: 'text/markdown' });
+        const blob = new Blob([activeItem.note.body_text], { type: 'text/markdown;charset=utf-8' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = `${activeItem.title || 'note'}.md`;
@@ -711,8 +1295,181 @@
       }
     }
 
-    // Gestion des tags
-    async function createTagPrompt() {
+    // --- Clic Droit Menu Contextuel ---
+    function handleCardContextMenu(e, itemId) {
+      e.preventDefault();
+      contextMenuItemId = itemId;
+      const targetItem = items.find(i => i.id === itemId);
+      if (!targetItem) return;
+
+      document.getElementById('contextPinLabel').innerText = targetItem.favorite === 1 ? 'Retirer des favoris' : 'Épingler en haut';
+
+      const menu = document.getElementById('cardContextMenu');
+      menu.style.left = `${Math.min(e.clientX, window.innerWidth - 220)}px`;
+      menu.style.top = `${Math.min(e.clientY, window.innerHeight - 150)}px`;
+      menu.classList.remove('hidden');
+    }
+
+    function closeContextMenu() {
+      document.getElementById('cardContextMenu').classList.add('hidden');
+      contextMenuItemId = null;
+    }
+
+    async function contextActionPin() {
+      if (!contextMenuItemId) return;
+      const targetItem = items.find(i => i.id === contextMenuItemId);
+      if (!targetItem) return;
+      const newFav = targetItem.favorite === 1 ? false : true;
+      await fetch(`/api/items/${contextMenuItemId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ favorite: newFav })
+      });
+      closeContextMenu();
+      loadItems();
+      if (activeItem && activeItem.id === contextMenuItemId) selectItem(contextMenuItemId);
+    }
+
+    async function contextActionDuplicate() {
+      if (!contextMenuItemId) return;
+      closeContextMenu();
+      const res = await fetch(`/api/items/${contextMenuItemId}/duplicate`, { method: 'POST' });
+      if (res.ok) {
+        const dup = await res.json();
+        showToast('Note dupliquée');
+        await loadItems();
+        selectItem(dup.id);
+      }
+    }
+
+    function contextActionExport() {
+      if (!contextMenuItemId) return;
+      const targetItem = items.find(i => i.id === contextMenuItemId);
+      closeContextMenu();
+      if (!targetItem) return;
+      if (targetItem.type === 'note' && targetItem.note) {
+        const blob = new Blob([targetItem.note.body_text], { type: 'text/markdown;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${targetItem.title || 'note'}.md`;
+        a.click();
+      } else if (targetItem.file) {
+        window.open(`/api/attachments/${targetItem.id}`, '_blank');
+      }
+    }
+
+    async function contextActionDelete() {
+      if (!contextMenuItemId) return;
+      const id = contextMenuItemId;
+      closeContextMenu();
+      if (activeFilter === 'trash') {
+        if (!confirm('Supprimer définitivement cet élément ?')) return;
+        await fetch(`/api/items/${id}`, { method: 'DELETE' });
+      } else {
+        await fetch(`/api/items/${id}/trash`, { method: 'POST' });
+        showToast('Déplacé dans la corbeille');
+      }
+      if (activeItem && activeItem.id === id) closeWorkspace();
+      loadItems();
+    }
+
+    // --- Palette de Commandes (Ctrl+K / Ctrl+P) ---
+    function openCommandPalette() {
+      const modal = document.getElementById('commandPaletteModal');
+      const input = document.getElementById('paletteSearchInput');
+      modal.classList.remove('hidden');
+      input.value = '';
+      input.focus();
+      renderPaletteResults('');
+    }
+
+    function closeCommandPalette() {
+      document.getElementById('commandPaletteModal').classList.add('hidden');
+    }
+
+    function renderPaletteResults(query) {
+      const list = document.getElementById('paletteResultsList');
+      const q = query.trim().toLowerCase();
+
+      const defaultActions = [
+        { label: 'Nouvelle note', icon: '📝', action: () => { closeCommandPalette(); createNewNote(); } },
+        { label: 'Enregistrer un lien web', icon: '🔗', action: () => { closeCommandPalette(); promptAddLink(); } },
+        { label: 'Basculer le thème Sombre / Clair', icon: '🌓', action: () => { closeCommandPalette(); toggleTheme(); } },
+        { label: 'Exporter toutes les données en ZIP', icon: '📦', action: () => { closeCommandPalette(); downloadBackupZip(); } },
+        { label: 'Ouvrir les paramètres', icon: '⚙️', action: () => { closeCommandPalette(); openSettingsModal(); } },
+        { label: 'Vider la corbeille', icon: '🗑️', action: () => { closeCommandPalette(); emptyEntireTrash(); } }
+      ];
+
+      const filteredActions = defaultActions.filter(a => a.label.toLowerCase().includes(q));
+      const matchedNotes = items.filter(i => (i.title || '').toLowerCase().includes(q)).slice(0, 5);
+
+      let html = '';
+
+      if (filteredActions.length > 0) {
+        html += `<div class="px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase">Commandes</div>`;
+        html += filteredActions.map((a, idx) => `
+          <div onclick="executePaletteAction(${idx})" class="px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-[#20222C] cursor-pointer flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <span>${a.icon}</span>
+              <span class="font-medium">${escapeHtml(a.label)}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if (matchedNotes.length > 0) {
+        html += `<div class="px-2 pt-2 pb-1 text-[10px] font-bold text-zinc-400 uppercase">Notes & Éléments</div>`;
+        html += matchedNotes.map(item => `
+          <div onclick="closeCommandPalette(); selectItem('${item.id}');" class="px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-[#20222C] cursor-pointer flex items-center justify-between">
+            <span class="font-medium text-zinc-800 dark:text-zinc-200 truncate">${escapeHtml(item.title || 'Sans titre')}</span>
+            <span class="text-[10px] text-zinc-400">${item.type}</span>
+          </div>
+        `).join('');
+      }
+
+      if (!html) {
+        html = `<div class="p-4 text-center text-zinc-400 text-xs">Aucune commande ou note trouvée.</div>`;
+      }
+
+      list.innerHTML = html;
+      window._paletteActions = filteredActions;
+    }
+
+    function executePaletteAction(idx) {
+      if (window._paletteActions && window._paletteActions[idx]) {
+        window._paletteActions[idx].action();
+      }
+    }
+
+    document.getElementById('paletteSearchInput').addEventListener('input', (e) => {
+      renderPaletteResults(e.target.value);
+    });
+
+    // --- Tags et Filtres ---
+    function renderEditorTags(item) {
+      const container = document.getElementById('editorTagsContainer');
+      const tagsHtml = (item.tags || []).map(t => `
+        <span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-[#1C1E26] text-zinc-600 dark:text-zinc-300 text-[11px] font-medium">
+          <span>#${escapeHtml(t.name)}</span>
+          <button onclick="removeTagFromActive('${t.id}')" class="text-zinc-400 hover:text-rose-500 ml-0.5">✕</button>
+        </span>
+      `).join('');
+
+      container.innerHTML = `
+        ${tagsHtml}
+        <button onclick="promptAddTagToActive()" class="text-[11px] text-zinc-400 hover:text-brand px-1.5 py-0.5 rounded border border-dashed border-zinc-300 dark:border-zinc-700 transition-colors">
+          + Étiquette
+        </button>
+      `;
+    }
+
+    function closeWorkspace() {
+      activeItem = null;
+      document.getElementById('activeWorkspaceView').classList.add('hidden');
+      document.getElementById('emptyWorkspaceView').classList.remove('hidden');
+    }
+
+    async function promptCreateTag() {
       const name = prompt('Nom de la nouvelle étiquette :');
       if (!name || !name.trim()) return;
       try {
@@ -743,7 +1500,7 @@
 
     async function promptAddTagToActive() {
       if (!activeItem || tags.length === 0) {
-        alert('Créez d\'abord une étiquette dans le menu de gauche.');
+        promptCreateTag();
         return;
       }
       const tagNames = tags.map(t => t.name).join('\n- ');
@@ -781,18 +1538,29 @@
       loadItems();
     }
 
-    // Filtres généraux
     function setFilter(filter) {
       activeFilter = filter;
       activeTagId = null;
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.className = 'nav-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-[#1E2026]';
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.className = 'nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#1B1D24] transition-colors';
       });
       const activeBtn = document.getElementById(`nav-${filter}`);
       if (activeBtn) {
-        activeBtn.className = 'nav-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium bg-zinc-200 dark:bg-[#22242B] text-zinc-900 dark:text-white';
+        activeBtn.className = 'nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-zinc-200/80 dark:bg-[#1E2129] text-zinc-900 dark:text-white transition-colors';
       }
       renderTagsNav();
+      loadItems();
+    }
+
+    function setQuickType(type) {
+      activeType = type;
+      document.querySelectorAll('.chip-filter').forEach(chip => {
+        chip.className = 'chip-filter px-2 py-0.5 rounded-md font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#1A1C22] transition-colors';
+      });
+      const activeChip = document.getElementById(`chip-${type}`);
+      if (activeChip) {
+        activeChip.className = 'chip-filter px-2 py-0.5 rounded-md font-semibold bg-zinc-200 dark:bg-[#22242E] text-zinc-900 dark:text-white transition-colors';
+      }
       loadItems();
     }
 
@@ -801,15 +1569,15 @@
         const res = await fetch('/api/items?trash=false');
         const data = await res.json();
         const all = data.items || [];
-        document.getElementById('count-inbox').innerText = all.length;
-        document.getElementById('count-notes').innerText = all.filter(i => i.type === 'note').length;
-        document.getElementById('count-links').innerText = all.filter(i => i.type === 'link').length;
-        document.getElementById('count-files').innerText = all.filter(i => i.type === 'file' || i.type === 'image').length;
-        document.getElementById('count-favs').innerText = all.filter(i => i.favorite === 1).length;
+        document.getElementById('badge-all-count').innerText = all.length;
+        document.getElementById('badge-fav-count').innerText = all.filter(i => i.favorite === 1).length;
+        document.getElementById('badge-notes-count').innerText = all.filter(i => i.type === 'note').length;
+        document.getElementById('badge-links-count').innerText = all.filter(i => i.type === 'link').length;
+        document.getElementById('badge-files-count').innerText = all.filter(i => i.type === 'file' || i.type === 'image').length;
 
         const resTrash = await fetch('/api/items?trash=true');
         const dataTrash = await resTrash.json();
-        document.getElementById('count-trash').innerText = dataTrash.count || 0;
+        document.getElementById('badge-trash-count').innerText = dataTrash.count || 0;
       } catch {}
     }
 
@@ -824,11 +1592,11 @@
       document.getElementById('settingsModal').classList.add('hidden');
     }
 
-    function downloadBackup() {
+    function downloadBackupZip() {
       window.location.href = '/api/export/zip';
     }
 
-    async function restoreBackupFile(event) {
+    async function handleRestoreFile(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
       try {
@@ -851,28 +1619,123 @@
       }
     }
 
-    // Raccourcis clavier (Ctrl+N, Ctrl+K)
-    window.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
-        e.preventDefault();
-        createNewNote();
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        document.getElementById('searchInput').focus();
-      }
-    });
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      input.value = '';
+      searchQuery = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      loadItems();
+    }
 
-    let searchTimeout = null;
+    let searchDebounce = null;
     document.getElementById('searchInput').addEventListener('input', (e) => {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        searchQuery = e.target.value.trim();
+      clearTimeout(searchDebounce);
+      const val = e.target.value.trim();
+      document.getElementById('clearSearchBtn').classList.toggle('hidden', val.length === 0);
+      searchDebounce = setTimeout(() => {
+        searchQuery = val;
         loadItems();
       }, 150);
     });
 
-    // Date relative lisible
+    // --- Navigation au Clavier (Flèches Haut/Bas, Ctrl+N, Ctrl+K, Ctrl+D) ---
+    window.addEventListener('keydown', (e) => {
+      // Ignorer si on est en train d'écrire dans la note ou un champ texte
+      const isInput = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        createNewNote();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openCommandPalette();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+        e.preventDefault();
+        openCommandPalette();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        duplicateCurrentItem();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === '\\') {
+        e.preventDefault();
+        toggleSidebar();
+      } else if (e.key === 'Escape') {
+        closeContextMenu();
+        closeCommandPalette();
+        closeSettingsModal();
+        const addMenu = document.getElementById('quickAddMenu');
+        if (addMenu) addMenu.classList.add('hidden');
+      } else if (!isInput && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+        // Navigation fluide de note en note avec les flèches haut/bas
+        if (items.length === 0) return;
+        e.preventDefault();
+        const currentIndex = items.findIndex(i => activeItem && i.id === activeItem.id);
+        let nextIndex = 0;
+        if (e.key === 'ArrowDown') {
+          nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+        } else {
+          nextIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+        }
+        selectItem(items[nextIndex].id);
+      }
+    });
+
+    // Fermer le menu contextuel si on clique ailleurs
+    window.addEventListener('click', () => {
+      closeContextMenu();
+      const addMenu = document.getElementById('quickAddMenu');
+      if (addMenu && !addMenu.classList.contains('hidden')) {
+        addMenu.classList.add('hidden');
+      }
+    });
+
+    // --- Glisser-Déposer de Fichiers depuis Windows ---
+    window.addEventListener('dragover', (e) => e.preventDefault());
+    window.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        const file = e.dataTransfer.files[0];
+
+        // Si fichier markdown .md
+        if (file.name.endsWith('.md') || file.name.endsWith('.txt')) {
+          const text = await file.text();
+          const baseName = file.name.replace(/\.[^/.]+$/, '');
+          let title = baseName;
+          const firstLine = text.split('\n')[0].trim();
+          if (firstLine.startsWith('# ')) title = firstLine.substring(2).trim();
+
+          const res = await fetch('/api/items/note', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, body_text: text })
+          });
+          if (res.ok) {
+            const note = await res.json();
+            showToast('Note importée depuis ' + file.name);
+            await loadItems();
+            selectItem(note.id);
+          }
+          return;
+        }
+
+        // Autre fichier / image
+        const fd = new FormData();
+        fd.append('file', file);
+        showToast('Importation de ' + file.name + '...');
+        try {
+          const res = await fetch('/api/items/file', { method: 'POST', body: fd });
+          if (res.ok) {
+            const item = await res.json();
+            showToast('Document importé');
+            await loadItems();
+            selectItem(item.id);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    });
+
+    // --- Formatage de dates et surbrillance ---
     function formatRelativeDate(isoStr) {
       if (!isoStr) return '';
       const d = new Date(isoStr);
@@ -880,10 +1743,17 @@
       const diffMs = now.getTime() - d.getTime();
       const diffMin = Math.floor(diffMs / 60000);
       if (diffMin < 1) return 'À l\'instant';
-      if (diffMin < 60) return `Il y a ${diffMin} min`;
+      if (diffMin < 60) return `${diffMin} min`;
       const diffHours = Math.floor(diffMin / 60);
-      if (diffHours < 24) return `Il y a ${diffHours} h`;
+      if (diffHours < 24) return `${diffHours} h`;
       return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    }
+
+    function highlightText(text, query) {
+      if (!query || !text) return text;
+      const cleanQ = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${cleanQ})`, 'gi');
+      return text.replace(regex, '<mark class="search-highlight">$1</mark>');
     }
 
     function escapeHtml(str) {
@@ -896,7 +1766,7 @@
         .replace(/'/g, '&#039;');
     }
 
-    // Lancement
+    // --- Démarrage de l'Application ---
     initTheme();
     loadTags();
     loadItems().then(() => {

@@ -25,3 +25,4 @@ Pour évoluer vers la synchronisation après le MVP :
 ## 3. Positionnement par rapport au MVP
 
 Conformément à la section 10.3 du cahier des charges, **le MVP se concentre exclusivement sur l'excellence de la capture et de la recherche locale**. La synchronisation ne sera déployée qu'après validation complète du socle local et des protocoles de chiffrement.
+

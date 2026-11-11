@@ -311,6 +311,56 @@ export class OneBoxDatabase {
     });
   }
 
+  public duplicateItem(id: string): Item | null {
+    const existing = this.getItemById(id);
+    if (!existing) return null;
+
+    const newTitle = `Copie de ${existing.title}`;
+    const tagIds = existing.tags ? existing.tags.map(t => t.id) : [];
+
+    const newItem = this.createItem({
+      type: existing.type,
+      title: newTitle,
+      description: existing.description,
+      source: 'Duplication',
+      note: existing.note ? { body_text: existing.note.body_text, format: existing.note.format } : undefined,
+      link: existing.link ? {
+        url: existing.link.url,
+        normalized_url: existing.link.normalized_url,
+        fetched_title: existing.link.fetched_title || undefined,
+        fetched_description: existing.link.fetched_description || undefined,
+        preview_image: existing.link.preview_image || undefined
+      } : undefined,
+      file: existing.file ? {
+        display_name: existing.file.display_name,
+        storage_path: existing.file.storage_path,
+        mime_type: existing.file.mime_type,
+        size_bytes: existing.file.size_bytes,
+        checksum: existing.file.checksum,
+        import_mode: 'reference'
+      } : undefined,
+      tagIds
+    });
+
+    return newItem;
+  }
+
+  public emptyTrash(): { count: number; filePathsToDelete: string[] } {
+    const trashed = this.db.prepare('SELECT id FROM items WHERE deleted_at IS NOT NULL').all() as { id: string }[];
+    const allFilesToDelete: string[] = [];
+    let count = 0;
+
+    for (const row of trashed) {
+      const { success, filePathsToDelete } = this.hardDeleteItem(row.id);
+      if (success) {
+        count++;
+        allFilesToDelete.push(...filePathsToDelete);
+      }
+    }
+
+    return { count, filePathsToDelete: allFilesToDelete };
+  }
+
   // --- Tags ---
   public createTag(name: string, color?: string | null): Tag {
     const cleanName = name.trim();

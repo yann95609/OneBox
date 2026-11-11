@@ -33,3 +33,4 @@ Conformément au périmètre validé dans le cahier des charges :
 1. **Mono-utilisateur local** : Une seule bibliothèque par installation ; les profils multiples et la synchronisation cloud chiffrée font l'objet des phases ultérieures (Section 10).
 2. **Extraction de texte PDF/DOCX (OCR)** : L'indexation FTS se concentre sur les titres, métadonnées, notes et tags ; l'OCR et l'extraction de corps de documents lourds seront introduits dans les prochaines versions.
 3. **Application de bureau** : Accès direct via navigateur web local (`localhost`) et lanceur direct Windows. Les paquets d'installation natifs packagés (MSI/InnoSetup) seront validés en phase bêta.
+

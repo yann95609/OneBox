@@ -127,3 +127,4 @@ Mise en Corbeille (deleted_at renseigné)
   ├── Restauration (deleted_at = NULL)
   └── Suppression définitive (DELETE cascade + purge fichier physique)
 ```
+

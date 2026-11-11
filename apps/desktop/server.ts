@@ -290,11 +290,28 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, { success });
     }
 
+    // 7.b Duplication d'un élément (comme dans Bear / Obsidian / Apple Notes)
+    if (pathname.match(/^\/api\/items\/[^/]+\/duplicate$/) && method === 'POST') {
+      const id = pathname.split('/')[3];
+      const duplicated = db.duplicateItem(id);
+      if (!duplicated) return sendJson(res, 404, { error: 'Élément introuvable' });
+      return sendJson(res, 201, duplicated);
+    }
+
     // 8. Restauration de la corbeille
     if (pathname.match(/^\/api\/items\/[^/]+\/restore$/) && method === 'POST') {
       const id = pathname.split('/')[3];
       const success = db.restoreItem(id);
       return sendJson(res, 200, { success });
+    }
+
+    // 8.b Vider la corbeille définitivement
+    if (pathname === '/api/trash/empty' && method === 'POST') {
+      const { count, filePathsToDelete } = db.emptyTrash();
+      for (const filePath of filePathsToDelete) {
+        fileManager.deletePhysicalFile(filePath);
+      }
+      return sendJson(res, 200, { success: true, count });
     }
 
     // 9. Suppression définitive (Hard Delete)
