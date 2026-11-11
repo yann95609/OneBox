@@ -180,6 +180,17 @@
       border-radius: 2px;
       padding: 0 2px;
     }
+    @media print {
+      header, aside, section, #trashedItemWarning, .h-8, #noteFormattingToolbar, .h-11, #btnActiveFav, #cardContextMenu, #commandPaletteModal, #settingsModal, #toast {
+        display: none !important;
+      }
+      body, #workspaceMain, #activeWorkspaceView {
+        background: white !important;
+        color: black !important;
+        overflow: visible !important;
+        height: auto !important;
+      }
+    }
   </style>
 </head>
 <body class="h-screen w-screen flex flex-col overflow-hidden">
