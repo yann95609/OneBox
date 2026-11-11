@@ -45,3 +45,4 @@ console.log(`Éléments importés : ${result.importedItemsCount}`);
 1. Vérification de la présence de `manifest.json`.
 2. Correspondance des empreintes **SHA-256** pour chaque fichier présent dans `attachments/`.
 3. Validation des dates au format ISO 8601 UTC.
+

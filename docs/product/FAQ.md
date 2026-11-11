@@ -33,3 +33,4 @@ Vos pièces jointes sont conservées dans le dossier local `data/attachments/` a
 
 ### Comment sauvegarder mes données ?
 Cliquez sur le bouton **« Sauvegarder / Exporter »** dans la barre latérale. Une archive ZIP est générée immédiatement, contenant vos métadonnées (`items.json`, `items.csv`), un manifeste de contrôle (`manifest.json`), vos notes au format Markdown et vos documents originaux.
+

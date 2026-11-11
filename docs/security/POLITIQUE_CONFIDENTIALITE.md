@@ -29,3 +29,4 @@ Conformément à la **Section 11.3 du Cahier des charges ONEBOX**, ce document d
 
 - **Droit d'exportation intégrale** : L'utilisateur peut à tout instant exporter 100% de ses données au format ouvert standard (JSON, Markdown, CSV, ZIP).
 - **Droit à l'effacement** : La suppression définitive d'un élément dans la Corbeille purge instantanément son contenu de la base SQLite et supprime physiquement le fichier associé du disque dur.
+

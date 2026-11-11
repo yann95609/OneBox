@@ -349,6 +349,20 @@
           <input id="settingStoragePath" type="text" readonly class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#182030] border border-slate-200 dark:border-[#26324B] text-xs font-mono text-slate-500">
         </div>
 
+        <!-- Section Sauvegarde & Restauration (Section 5.6) -->
+        <div class="p-4 rounded-xl bg-slate-100 dark:bg-[#161D2C] border border-slate-200 dark:border-[#222C40] space-y-3">
+          <p class="font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-300">Gestion des Sauvegardes (Section 5.6)</p>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <button onclick="downloadFullExportZip()" class="flex-1 px-3 py-2 rounded-xl text-xs font-semibold bg-brand-500 hover:bg-brand-600 text-white transition-all text-center">
+              Exporter l'archive ZIP
+            </button>
+            <label class="flex-1 px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#20293D] border border-slate-300 dark:border-[#26324B] hover:bg-slate-50 dark:hover:bg-[#28334D] cursor-pointer text-center text-slate-700 dark:text-slate-200">
+              <span>Importer un JSON</span>
+              <input type="file" accept=".json" onchange="handleRestoreBackup(event)" class="hidden">
+            </label>
+          </div>
+        </div>
+
         <div class="p-4 rounded-xl bg-brand-500/10 border border-brand-500/20 text-xs space-y-1">
           <p class="font-bold text-brand-500">Engagement de confidentialité & Local-first</p>
           <p class="text-slate-600 dark:text-slate-300">Vos données personnelles, notes, liens et pièces jointes restent exclusivement stockées sur votre appareil. Aucune télémétrie, aucune transmission serveur ni publicité.</p>
@@ -1133,6 +1147,37 @@
 
     function closeSettingsModal() {
       document.getElementById('settingsModal').classList.add('hidden');
+    }
+
+    async function handleRestoreBackup(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const json = JSON.parse(text);
+
+        showToast('Restauration en cours...');
+        const res = await fetch('/api/restore', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(json)
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showToast(`Restauration terminée : ${data.importedItemsCount} éléments importés !`);
+          closeSettingsModal();
+          fetchTags();
+          fetchItems();
+        } else {
+          alert('Erreur lors de la restauration: ' + (data.errors ? data.errors.join(', ') : 'Format invalide'));
+        }
+      } catch (err) {
+        alert('Impossible de lire le fichier de sauvegarde JSON : ' + err.message);
+      } finally {
+        event.target.value = '';
+      }
     }
 
     async function rebuildSearchIndex() {

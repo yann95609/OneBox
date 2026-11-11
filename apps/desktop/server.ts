@@ -6,6 +6,7 @@ import { OneBoxDatabase } from '../../packages/data/db.ts';
 import { FileManager } from '../../packages/storage/fileManager.ts';
 import { SearchEngine } from '../../packages/search/engine.ts';
 import { ExportManager } from '../../packages/storage/exportManager.ts';
+import { RestoreManager } from '../../packages/storage/restoreManager.ts';
 import { isValidUrl, normalizeUrl, sanitizeTitle, detectMimeType, isImageMimeType } from '../../packages/core/validation.ts';
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3845;
@@ -13,6 +14,7 @@ const db = new OneBoxDatabase();
 const fileManager = new FileManager();
 const searchEngine = new SearchEngine(db);
 const exportManager = new ExportManager(db);
+const restoreManager = new RestoreManager(db);
 
 const PUBLIC_DIR = path.join(process.cwd(), 'apps', 'desktop', 'public');
 const ASSETS_DIR = path.join(process.cwd(), 'assets');
@@ -343,6 +345,14 @@ const server = http.createServer(async (req, res) => {
       });
       res.end(zipBuffer);
       return;
+    }
+
+    // 11.b Restauration d'une sauvegarde JSON (Section 5.6)
+    if (pathname === '/api/restore' && method === 'POST') {
+      const body = await readRequestBody(req);
+      const json = JSON.parse(body.toString('utf8') || '{}');
+      const restoreResult = restoreManager.restoreFromJson(json);
+      return sendJson(res, restoreResult.success ? 200 : 400, restoreResult);
     }
 
     // 12. Paramètres de l'application
