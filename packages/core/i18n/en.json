@@ -1,0 +1,35 @@
+{
+  "app_name": "ONEBOX",
+  "app_tagline": "Personal digital space to capture, organize and retrieve information",
+  "promise": "Save information once. ONEBOX helps you find it whenever you need it.",
+  "nav": {
+    "inbox": "Inbox",
+    "favorites": "Favorites",
+    "notes": "Notes",
+    "links": "Web Links",
+    "files": "Files",
+    "images": "Images",
+    "unclassified": "Unclassified",
+    "tags": "Tags / Labels",
+    "trash": "Trash",
+    "backup_export": "Backup / Export",
+    "settings": "Settings"
+  },
+  "actions": {
+    "add_note": "+ Note",
+    "add_link": "+ Link",
+    "add_file": "+ File / Image",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "restore": "Restore",
+    "hard_delete": "Delete permanently",
+    "search_placeholder": "Search by keyword, content, tag... (Ctrl + K)",
+    "rebuild_index": "↺ Rebuild index"
+  },
+  "privacy": {
+    "local_first_title": "Privacy & Local-first Commitment",
+    "local_first_desc": "Your personal data, notes, links, and attachments remain exclusively stored on your device. Zero telemetry, zero server transmission, no ads."
+  }
+}

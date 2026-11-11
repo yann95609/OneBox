@@ -7,6 +7,7 @@ import { OneBoxDatabase } from '../packages/data/db.ts';
 import { FileManager } from '../packages/storage/fileManager.ts';
 import { SearchEngine } from '../packages/search/engine.ts';
 import { ExportManager } from '../packages/storage/exportManager.ts';
+import { RestoreManager } from '../packages/storage/restoreManager.ts';
 import { isValidUrl, normalizeUrl } from '../packages/core/validation.ts';
 
 const TEST_DB_PATH = path.join(process.cwd(), 'data', 'test_onebox.db');
@@ -166,6 +167,38 @@ test('ONEBOX Suite Complète - Critères d\'acceptation MVP', async (t) => {
     // Ré-exécution de la logique de migration (idempotente)
     const migrations = db.db.prepare('SELECT version FROM schema_migrations').all() as { version: number }[];
     assert.ok(migrations.some(m => m.version === 1), 'La migration version 1 doit être enregistrée');
+  });
+
+  await t.test('AC-11 (Section 5.6): Importation et restauration d\'une sauvegarde', () => {
+    const restoreManager = new RestoreManager(db);
+    const backupPayload = {
+      version: '1.0.0',
+      tags: [{ id: 'old-tag-1', name: 'SauvegardeTest', color: '#10B981', created_at: new Date().toISOString() }],
+      items: [{
+        id: 'old-item-1',
+        type: 'note' as const,
+        title: 'Note restaurée depuis une archive',
+        description: 'Vérification de la procédure de restauration',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        favorite: 0,
+        note: {
+          item_id: 'old-item-1',
+          body_text: 'Contenu parfaitement restauré',
+          format: 'markdown' as const
+        },
+        tags: [{ id: 'old-tag-1', name: 'SauvegardeTest', created_at: new Date().toISOString() }]
+      }]
+    };
+
+    const restoreResult = restoreManager.restoreFromJson(backupPayload);
+    assert.ok(restoreResult.success, 'La restauration doit s\'exécuter avec succès');
+    assert.strictEqual(restoreResult.importedItemsCount, 1);
+    assert.strictEqual(restoreResult.importedTagsCount, 1);
+
+    // Vérifier recherche de la note restaurée
+    const found = searchEngine.search({ query: 'parfaitement' });
+    assert.ok(found.length > 0, 'La note restaurée doit être immédiatement indexée dans FTS5');
   });
 
   // Nettoyage final

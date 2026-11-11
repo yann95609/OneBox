@@ -40,27 +40,12 @@
     }
   </script>
   <style>
-    body {
-      user-select: none;
-    }
-    input, textarea, [contenteditable="true"] {
-      user-select: text;
-    }
-    /* Scrollbar personnalisé */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(148, 163, 184, 0.25);
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(148, 163, 184, 0.45);
-    }
+    body { user-select: none; }
+    input, textarea, [contenteditable="true"] { user-select: text; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.45); }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-[#0A0D14] dark:text-[#F1F5F9] font-sans antialiased transition-colors duration-200 h-screen flex flex-col overflow-hidden">
@@ -142,6 +127,13 @@
             <span id="badge-inbox-count" class="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-500 font-bold">0</span>
           </button>
 
+          <button onclick="setFilterNav('favorites')" id="nav-favorites" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#161D2C] transition-all">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-amber-400 fill-amber-400" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              <span>Favoris</span>
+            </div>
+          </button>
+
           <button onclick="setFilterNav('notes')" id="nav-notes" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#161D2C] transition-all">
             <div class="flex items-center space-x-2.5">
               <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -219,14 +211,25 @@
     <!-- Zone Centrale Principale -->
     <main class="flex-1 flex flex-col bg-slate-50 dark:bg-[#0A0D14] overflow-hidden">
       
-      <!-- Barre d'état de vue et filtres rapides -->
+      <!-- Barre d'état de vue et tri (F-014) -->
       <div class="px-6 py-4 border-b border-slate-200 dark:border-[#1E2638] flex items-center justify-between shrink-0">
         <div>
           <h1 id="viewTitle" class="text-xl font-extrabold tracking-tight">Boîte de réception</h1>
           <p id="viewSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Éléments récemment enregistrés</p>
         </div>
 
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-3">
+          <!-- Sélecteur de Tri (F-014) -->
+          <div class="flex items-center space-x-1.5 text-xs text-slate-500">
+            <span>Trier :</span>
+            <select id="sortBySelect" onchange="onSortChange(this.value)" class="px-2.5 py-1 rounded-lg text-xs bg-slate-200 dark:bg-[#161D2C] border border-transparent dark:border-[#222C40] focus:outline-none text-slate-700 dark:text-slate-300">
+              <option value="date_desc">Date (récent)</option>
+              <option value="date_asc">Date (ancien)</option>
+              <option value="title_asc">Titre (A → Z)</option>
+              <option value="title_desc">Titre (Z → A)</option>
+            </select>
+          </div>
+
           <span id="itemsCountBadge" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-[#161D2C] text-slate-600 dark:text-slate-300">
             0 élément
           </span>
@@ -243,7 +246,7 @@
       
     </main>
 
-    <!-- Panneau latéral de détail (Slide-in) -->
+    <!-- Panneau latéral de détail / édition (Slide-in) -->
     <div id="detailPanel" class="w-96 border-l border-slate-200 dark:border-[#1E2638] bg-white dark:bg-[#0F1420] flex flex-col justify-between hidden shrink-0 z-10 overflow-hidden shadow-2xl">
       <div class="p-5 overflow-y-auto flex-1 space-y-4" id="detailContent">
         <!-- Rendu dynamique du détail -->
@@ -374,11 +377,13 @@
     let currentFilter = 'inbox';
     let currentTagId = null;
     let currentSearchQuery = '';
+    let currentSortBy = 'date_desc';
     let itemsList = [];
     let tagsList = [];
     let activeModalTab = 'note';
     let selectedModalTagIds = new Set();
     let currentActiveDetailItem = null;
+    let isEditingDetail = false;
 
     // Gestion du thème
     function initTheme() {
@@ -408,6 +413,11 @@
       setTimeout(() => {
         t.classList.add('opacity-0', 'translate-y-3', 'pointer-events-none');
       }, 3000);
+    }
+
+    function onSortChange(val) {
+      currentSortBy = val;
+      fetchItems();
     }
 
     // Chargement des données
@@ -451,8 +461,14 @@
           params.append('q', currentSearchQuery);
         }
 
+        if (currentSortBy) {
+          params.append('sortBy', currentSortBy);
+        }
+
         if (currentFilter === 'trash') {
           params.append('trash', 'true');
+        } else if (currentFilter === 'favorites') {
+          params.append('favorites', 'true');
         } else if (currentFilter === 'unclassified') {
           params.append('unclassified', 'true');
         } else if (currentFilter === 'notes') {
@@ -479,12 +495,51 @@
       }
     }
 
+    async function seedDiscoveryData() {
+      showToast('Chargement des exemples de découverte...');
+      try {
+        const res = await fetch('/api/items/seed', { method: 'POST' });
+        if (res.ok) {
+          showToast('Exemples chargés avec succès !');
+          fetchTags();
+          fetchItems();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
     function renderItems() {
       const container = document.getElementById('itemsContainer');
       const badge = document.getElementById('itemsCountBadge');
       badge.innerText = `${itemsList.length} élément${itemsList.length > 1 ? 's' : ''}`;
 
       if (itemsList.length === 0) {
+        if (currentFilter === 'inbox' && !currentSearchQuery && !currentTagId) {
+          container.innerHTML = `
+            <div class="p-8 rounded-3xl bg-gradient-to-b from-brand-500/10 via-slate-100 to-transparent dark:from-brand-500/10 dark:via-[#121824] dark:to-transparent border border-brand-500/20 text-center max-w-lg mx-auto my-8 space-y-4">
+              <div class="w-16 h-16 rounded-2xl bg-black mx-auto overflow-hidden shadow-xl shadow-brand-500/20 flex items-center justify-center p-2">
+                <img src="/assets/logo.jpg" alt="Logo" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <h2 class="text-lg font-extrabold tracking-tight">Bienvenue dans ONEBOX</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
+                  « Tu enregistres une information une seule fois. ONEBOX t'aide à la retrouver quand tu en as besoin. »
+                </p>
+              </div>
+              <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
+                <button onclick="seedDiscoveryData()" class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold bg-brand-500 hover:bg-brand-600 text-white shadow-md shadow-brand-500/25 transition-all">
+                  ✨ Charger les exemples de découverte
+                </button>
+                <button onclick="openAddModal('note')" class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#182030] border border-slate-300 dark:border-[#222C40] hover:bg-slate-100 dark:hover:bg-[#20293D] transition-all">
+                  + Créer ma 1ère note
+                </button>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
         container.innerHTML = `
           <div class="h-64 flex flex-col items-center justify-center text-center p-6 rounded-2xl border border-dashed border-slate-300 dark:border-[#222C40]">
             <div class="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-500 flex items-center justify-center mb-3">
@@ -512,6 +567,8 @@
           </span>
         `).join('');
 
+        const isFav = item.favorite === 1;
+
         return `
           <div onclick="selectItem('${item.id}')" class="group p-4 rounded-2xl bg-white dark:bg-[#121824] border border-slate-200 dark:border-[#1E2638] hover:border-brand-500 dark:hover:border-brand-500/80 transition-all cursor-pointer shadow-sm hover:shadow-md flex items-start space-x-4">
             <div class="p-2.5 rounded-xl bg-slate-100 dark:bg-[#182030] shrink-0 mt-0.5">
@@ -520,7 +577,12 @@
             
             <div class="flex-1 min-w-0">
               <div class="flex items-center justify-between">
-                <h3 class="text-sm font-bold truncate group-hover:text-brand-500 transition-colors">${escapeHtml(item.title)}</h3>
+                <div class="flex items-center space-x-2 truncate">
+                  <h3 class="text-sm font-bold truncate group-hover:text-brand-500 transition-colors">${escapeHtml(item.title)}</h3>
+                  <button onclick="event.stopPropagation(); toggleFavorite('${item.id}', ${!isFav})" class="text-xs p-0.5 ${isFav ? 'text-amber-400' : 'text-slate-300 dark:text-slate-600 hover:text-amber-400'}" title="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
+                    <svg class="w-3.5 h-3.5 ${isFav ? 'fill-amber-400' : 'fill-none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                  </button>
+                </div>
                 <span class="text-[11px] text-slate-400 shrink-0 font-mono ml-2">${localDate}</span>
               </div>
 
@@ -552,11 +614,31 @@
       }).join('');
     }
 
+    async function toggleFavorite(id, favStatus) {
+      try {
+        const res = await fetch(`/api/items/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ favorite: favStatus })
+        });
+        if (res.ok) {
+          showToast(favStatus ? 'Ajouté aux favoris' : 'Retiré des favoris');
+          fetchItems();
+          if (currentActiveDetailItem && currentActiveDetailItem.id === id) {
+            selectItem(id);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
     async function selectItem(id) {
       try {
         const res = await fetch(`/api/items/${id}`);
         const item = await res.json();
         currentActiveDetailItem = item;
+        isEditingDetail = false;
         renderDetailPanel(item);
       } catch (err) {
         console.error('Erreur detail item:', err);
@@ -567,6 +649,12 @@
       const panel = document.getElementById('detailPanel');
       const content = document.getElementById('detailContent');
       panel.classList.remove('hidden');
+
+      if (isEditingDetail) {
+        // Mode Édition (F-006)
+        renderDetailEditMode(item);
+        return;
+      }
 
       let bodyHtml = '';
       if (item.type === 'note' && item.note) {
@@ -617,12 +705,18 @@
       content.innerHTML = `
         <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#1E2638]">
           <span class="text-xs uppercase font-extrabold px-2 py-0.5 rounded bg-brand-500/10 text-brand-500">${item.type}</span>
-          <button onclick="closeDetailPanel()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-sm">✕</button>
+          <div class="flex items-center space-x-1">
+            <button onclick="startEditDetail()" class="text-xs px-2.5 py-1 rounded-lg border border-slate-200 dark:border-[#26324B] hover:bg-slate-100 dark:hover:bg-[#1A2234] font-semibold text-slate-600 dark:text-slate-300">
+              Modifier
+            </button>
+            <button onclick="closeDetailPanel()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-sm p-1">✕</button>
+          </div>
         </div>
 
         <div>
           <h2 class="text-lg font-bold leading-snug select-text">${escapeHtml(item.title)}</h2>
-          <p class="text-xs text-slate-400 mt-1 font-mono">${new Date(item.created_at).toLocaleString()}</p>
+          ${item.description ? `<p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${escapeHtml(item.description)}</p>` : ''}
+          <p class="text-[11px] text-slate-400 mt-1 font-mono">${new Date(item.created_at).toLocaleString()}</p>
         </div>
 
         ${bodyHtml}
@@ -647,8 +741,119 @@
       `;
     }
 
+    function startEditDetail() {
+      isEditingDetail = true;
+      renderDetailPanel(currentActiveDetailItem);
+    }
+
+    function cancelEditDetail() {
+      isEditingDetail = false;
+      renderDetailPanel(currentActiveDetailItem);
+    }
+
+    function renderDetailEditMode(item) {
+      const content = document.getElementById('detailContent');
+      const currentTagIds = new Set((item.tags || []).map(t => t.id));
+
+      const tagsSelectorHtml = tagsList.map(tag => {
+        const isSelected = currentTagIds.has(tag.id);
+        return `
+          <button type="button" onclick="toggleDetailTagSelection('${tag.id}')" id="detail-tag-${tag.id}" class="text-xs font-semibold px-2.5 py-1 rounded-full border transition-all ${isSelected ? 'bg-brand-500 text-white border-brand-500' : 'bg-slate-100 dark:bg-[#1A2234] border-slate-200 dark:border-[#26324B] text-slate-600 dark:text-slate-300'}">
+            #${escapeHtml(tag.name)}
+          </button>
+        `;
+      }).join('');
+
+      content.innerHTML = `
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#1E2638]">
+          <span class="text-xs uppercase font-extrabold text-brand-500">Mode Modification (F-006)</span>
+          <button onclick="cancelEditDetail()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-sm">✕</button>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Titre</label>
+            <input id="editTitleInput" type="text" value="${escapeHtml(item.title)}" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-100 dark:bg-[#182030] border border-slate-200 dark:border-[#26324B] focus:border-brand-500 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Description</label>
+            <textarea id="editDescInput" rows="2" class="w-full px-3 py-2 rounded-xl text-sm bg-slate-100 dark:bg-[#182030] border border-slate-200 dark:border-[#26324B] focus:border-brand-500 focus:outline-none">${escapeHtml(item.description || '')}</textarea>
+          </div>
+
+          ${item.type === 'note' && item.note ? `
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Texte de la note (Markdown)</label>
+              <textarea id="editNoteBodyInput" rows="6" class="w-full px-3 py-2 rounded-xl text-sm font-mono bg-slate-100 dark:bg-[#182030] border border-slate-200 dark:border-[#26324B] focus:border-brand-500 focus:outline-none">${escapeHtml(item.note.body_text)}</textarea>
+            </div>
+          ` : ''}
+
+          <div>
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tags associés</label>
+            <div id="detailTagsSelector" class="flex flex-wrap gap-1.5">
+              ${tagsSelectorHtml || '<span class="text-xs text-slate-400 italic">Créez des tags pour les associer.</span>'}
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-6 border-t border-slate-200 dark:border-[#1E2638] flex justify-end space-x-2">
+          <button onclick="cancelEditDetail()" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-[#1A2234]">Annuler</button>
+          <button onclick="saveDetailEdit('${item.id}')" class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-brand-500 hover:bg-brand-600 text-white shadow-sm shadow-brand-500/25">Enregistrer</button>
+        </div>
+      `;
+    }
+
+    let detailEditingTagIds = null;
+    function toggleDetailTagSelection(tagId) {
+      if (!detailEditingTagIds) {
+        detailEditingTagIds = new Set((currentActiveDetailItem.tags || []).map(t => t.id));
+      }
+      if (detailEditingTagIds.has(tagId)) {
+        detailEditingTagIds.delete(tagId);
+      } else {
+        detailEditingTagIds.add(tagId);
+      }
+      const btn = document.getElementById(`detail-tag-${tagId}`);
+      if (btn) {
+        const isSel = detailEditingTagIds.has(tagId);
+        btn.className = `text-xs font-semibold px-2.5 py-1 rounded-full border transition-all ${isSel ? 'bg-brand-500 text-white border-brand-500' : 'bg-slate-100 dark:bg-[#1A2234] border-slate-200 dark:border-[#26324B] text-slate-600 dark:text-slate-300'}`;
+      }
+    }
+
+    async function saveDetailEdit(id) {
+      const title = document.getElementById('editTitleInput').value.trim();
+      const description = document.getElementById('editDescInput').value.trim();
+      let noteBody = undefined;
+      const noteInput = document.getElementById('editNoteBodyInput');
+      if (noteInput) {
+        noteBody = noteInput.value;
+      }
+
+      const tagIds = detailEditingTagIds ? Array.from(detailEditingTagIds) : (currentActiveDetailItem.tags || []).map(t => t.id);
+
+      try {
+        const res = await fetch(`/api/items/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, description, noteBody, tagIds })
+        });
+        if (res.ok) {
+          showToast('Modifications enregistrées');
+          detailEditingTagIds = null;
+          isEditingDetail = false;
+          selectItem(id);
+          fetchItems();
+          fetchTags();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
     function closeDetailPanel() {
       document.getElementById('detailPanel').classList.add('hidden');
+      isEditingDetail = false;
+      detailEditingTagIds = null;
     }
 
     // Gestion de la Corbeille et Restauration
@@ -871,6 +1076,7 @@
       
       const titles = {
         inbox: 'Boîte de réception',
+        favorites: 'Favoris',
         notes: 'Notes',
         links: 'Liens sauvegardés',
         files: 'Fichiers & Documents',
@@ -880,7 +1086,7 @@
       };
 
       document.getElementById('viewTitle').innerText = titles[filter] || 'Éléments';
-      document.getElementById('viewSubtitle').innerText = filter === 'trash' ? 'Éléments supprimés prêts à être restaurés ou purgés' : 'Consultation locale';
+      document.getElementById('viewSubtitle').innerText = filter === 'trash' ? 'Éléments supprimés prêts à être restaurés ou purgés' : (filter === 'favorites' ? 'Vos éléments favoris épinglés' : 'Consultation locale');
 
       document.querySelectorAll('.nav-item').forEach(el => {
         el.className = 'nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-[#161D2C] transition-all';
@@ -974,4 +1180,3 @@
   </script>
 </body>
 </html>
-

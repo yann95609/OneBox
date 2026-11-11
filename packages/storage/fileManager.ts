@@ -121,5 +121,34 @@ export class FileManager {
       return false;
     }
   }
+
+  // Détection des fichiers manquants ou inaccessibles (Section 5.4)
+  public checkFileHealth(filePath: string, expectedChecksum?: string): {
+    exists: boolean;
+    accessible: boolean;
+    sizeBytes?: number;
+    checksumMatches?: boolean;
+  } {
+    try {
+      if (!fs.existsSync(filePath)) {
+        return { exists: false, accessible: false };
+      }
+      const stat = fs.statSync(filePath);
+      let checksumMatches = undefined;
+      if (expectedChecksum) {
+        const buffer = fs.readFileSync(filePath);
+        const currentChecksum = this.calculateBufferChecksum(buffer);
+        checksumMatches = currentChecksum === expectedChecksum;
+      }
+      return {
+        exists: true,
+        accessible: true,
+        sizeBytes: stat.size,
+        checksumMatches
+      };
+    } catch {
+      return { exists: false, accessible: false };
+    }
+  }
 }
 
