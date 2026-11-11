@@ -7,7 +7,7 @@ import { FileManager } from '../../packages/storage/fileManager.ts';
 import { SearchEngine } from '../../packages/search/engine.ts';
 import { ExportManager } from '../../packages/storage/exportManager.ts';
 import { RestoreManager } from '../../packages/storage/restoreManager.ts';
-import { isValidUrl, normalizeUrl, sanitizeTitle, detectMimeType, isImageMimeType } from '../../packages/core/validation.ts';
+import { isValidUrl, normalizeUrl, sanitizeTitle, detectMimeType, isImageMimeType, fetchLinkMetadata } from '../../packages/core/validation.ts';
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3845;
 const db = new OneBoxDatabase();
@@ -194,18 +194,29 @@ const server = http.createServer(async (req, res) => {
 
       const norm = normalizeUrl(json.url);
       const host = new URL(norm).hostname;
-      const title = sanitizeTitle(json.title || host, host);
+
+      let fetchedTitle = json.title || null;
+      let fetchedDescription = json.description || null;
+
+      // Récupération automatique du titre et de la description de la page si non fournis
+      if (!fetchedTitle || !fetchedDescription) {
+        const meta = await fetchLinkMetadata(norm);
+        if (!fetchedTitle && meta.title) fetchedTitle = meta.title;
+        if (!fetchedDescription && meta.description) fetchedDescription = meta.description;
+      }
+
+      const title = sanitizeTitle(fetchedTitle || host, host);
 
       const item = db.createItem({
         type: 'link',
         title,
-        description: json.description || null,
+        description: fetchedDescription,
         source: 'Web',
         link: {
           url: json.url,
           normalized_url: norm,
-          fetched_title: json.title || null,
-          fetched_description: json.description || null,
+          fetched_title: fetchedTitle,
+          fetched_description: fetchedDescription,
           preview_image: json.preview_image || null
         },
         tagIds: Array.isArray(json.tagIds) ? json.tagIds : []
