@@ -66,8 +66,10 @@ export interface SearchQuery {
   tagId?: string;
   isTrash?: boolean;
   unclassifiedOnly?: boolean;
+  favoritesOnly?: boolean;
   dateFrom?: string;
   dateTo?: string;
+  sortBy?: 'date_desc' | 'date_asc' | 'title_asc' | 'title_desc';
 }
 
 export interface SearchResultItem extends Item {

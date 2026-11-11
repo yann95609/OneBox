@@ -1,3 +1,4 @@
+/// <reference path="../types/globals.d.ts" />
 import test from 'node:test';
 import assert from 'node:assert';
 import fs from 'node:fs';

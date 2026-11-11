@@ -48,3 +48,4 @@ Bienvenue dans **ONEBOX**, votre espace numérique personnel pensé pour capture
   - `items.json` & `items.csv` : vos métadonnées complètes.
   - `notes/` : toutes vos notes exportées en fichiers `.md`.
   - `attachments/` : vos documents et images d'origine.
+

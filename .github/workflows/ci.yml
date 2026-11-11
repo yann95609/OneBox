@@ -22,3 +22,4 @@ jobs:
 
       - name: Exécution des tests d'acceptation
         run: npm test
+

@@ -1,4 +1,5 @@
-import http from 'node:http';
+/// <reference path="../../types/globals.d.ts" />
+import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { OneBoxDatabase } from '../../packages/data/db.ts';
@@ -17,7 +18,7 @@ const PUBLIC_DIR = path.join(process.cwd(), 'apps', 'desktop', 'public');
 const ASSETS_DIR = path.join(process.cwd(), 'assets');
 
 // Parser simple pour multipart/form-data ou JSON
-function readRequestBody(req: http.IncomingMessage): Promise<Buffer> {
+function readRequestBody(req: IncomingMessage): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
     req.on('data', chunk => chunks.push(chunk));
@@ -26,7 +27,7 @@ function readRequestBody(req: http.IncomingMessage): Promise<Buffer> {
   });
 }
 
-function sendJson(res: http.ServerResponse, statusCode: number, data: any) {
+function sendJson(res: ServerResponse, statusCode: number, data: any) {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json; charset=utf-8',
     'Access-Control-Allow-Origin': '*',
@@ -98,8 +99,10 @@ const server = http.createServer(async (req, res) => {
       const tagId = parsedUrl.searchParams.get('tagId') || undefined;
       const isTrash = parsedUrl.searchParams.get('trash') === 'true';
       const unclassifiedOnly = parsedUrl.searchParams.get('unclassified') === 'true';
+      const favoritesOnly = parsedUrl.searchParams.get('favorites') === 'true';
       const dateFrom = parsedUrl.searchParams.get('dateFrom') || undefined;
       const dateTo = parsedUrl.searchParams.get('dateTo') || undefined;
+      const sortBy = (parsedUrl.searchParams.get('sortBy') || undefined) as any;
 
       const results = searchEngine.search({
         query: q,
@@ -107,10 +110,45 @@ const server = http.createServer(async (req, res) => {
         tagId,
         isTrash,
         unclassifiedOnly,
+        favoritesOnly,
         dateFrom,
-        dateTo
+        dateTo,
+        sortBy
       });
       return sendJson(res, 200, { items: results, count: results.length });
+    }
+
+    // 1.b Charger des exemples de découverte (Section 6.1)
+    if (pathname === '/api/items/seed' && method === 'POST') {
+      const tagTuto = db.createTag('Découverte', '#0066FF');
+      const tagProjet = db.createTag('Projet', '#10B981');
+
+      const sample1 = db.createItem({
+        type: 'note',
+        title: 'Bienvenue dans ONEBOX ! 🚀',
+        description: 'Exemple de note Markdown pour découvrir les fonctionnalités',
+        source: 'Guide de bienvenue',
+        note: {
+          format: 'markdown',
+          body_text: '### Félicitations !\nVous utilisez désormais **ONEBOX**, votre espace numérique personnel.\n\n- **Recherche instantanée** : Tapez `Ctrl + K` pour chercher.\n- **Respect de la vie privée** : Aucune donnée ne quitte votre ordinateur.\n- **Exportation** : Sauvegardez tout en format ouvert (JSON/Markdown) à tout moment.\n\nVous pouvez modifier cette note ou la placer en corbeille.'
+        },
+        tagIds: [tagTuto.id]
+      });
+
+      const sample2 = db.createItem({
+        type: 'link',
+        title: 'Documentation officielle ONEBOX',
+        description: 'Retrouvez toutes les spécifications du cahier des charges et l\'architecture',
+        source: 'Web',
+        link: {
+          url: 'https://github.com/onebox/onebox',
+          normalized_url: 'https://github.com/onebox/onebox',
+          fetched_title: 'ONEBOX Documentation'
+        },
+        tagIds: [tagTuto.id, tagProjet.id]
+      });
+
+      return sendJson(res, 201, { success: true, count: 2 });
     }
 
     // 2. Détail d'un élément
@@ -244,14 +282,14 @@ const server = http.createServer(async (req, res) => {
     }
 
     // 7. Mise en corbeille (Soft Delete)
-    if (pathname.match(/^\/api\/items\/[^\/]+\/trash$/) && method === 'POST') {
+    if (pathname.match(/^\/api\/items\/[^/]+\/trash$/) && method === 'POST') {
       const id = pathname.split('/')[3];
       const success = db.softDeleteItem(id);
       return sendJson(res, 200, { success });
     }
 
     // 8. Restauration de la corbeille
-    if (pathname.match(/^\/api\/items\/[^\/]+\/restore$/) && method === 'POST') {
+    if (pathname.match(/^\/api\/items\/[^/]+\/restore$/) && method === 'POST') {
       const id = pathname.split('/')[3];
       const success = db.restoreItem(id);
       return sendJson(res, 200, { success });

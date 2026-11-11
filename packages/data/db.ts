@@ -1,3 +1,4 @@
+/// <reference path="../../types/globals.d.ts" />
 import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -394,6 +395,11 @@ export class OneBoxDatabase {
       conditions.push('NOT EXISTS (SELECT 1 FROM item_tags it WHERE it.item_id = i.id)');
     }
 
+    // Favoris uniquement
+    if (params.favoritesOnly) {
+      conditions.push('i.favorite = 1');
+    }
+
     // Date range
     if (params.dateFrom) {
       conditions.push('i.created_at >= ?');
@@ -408,13 +414,23 @@ export class OneBoxDatabase {
     let ftsJoin = '';
     let orderBy = 'i.created_at DESC';
 
+    if (params.sortBy === 'date_asc') {
+      orderBy = 'i.created_at ASC';
+    } else if (params.sortBy === 'title_asc') {
+      orderBy = 'i.title COLLATE NOCASE ASC';
+    } else if (params.sortBy === 'title_desc') {
+      orderBy = 'i.title COLLATE NOCASE DESC';
+    }
+
     if (params.query && params.query.trim().length > 0) {
       // Préparation du terme pour SQLite FTS5 (échappement de guillemets)
       const cleanTerm = params.query.trim().replace(/"/g, '""');
       ftsJoin = 'INNER JOIN items_fts fts ON fts.item_id = i.id';
       conditions.push('items_fts MATCH ?');
       sqlParams.push(`"${cleanTerm}"*`);
-      orderBy = 'fts.rank, i.created_at DESC';
+      if (!params.sortBy) {
+        orderBy = 'fts.rank, i.created_at DESC';
+      }
     }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
