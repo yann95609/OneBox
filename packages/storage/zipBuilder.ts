@@ -118,3 +118,4 @@ export class SimpleZipBuilder {
     return Buffer.concat([...localHeaders, ...centralDirectoryParts, eocd]);
   }
 }
+

@@ -23,3 +23,4 @@ Pour le MVP de ONEBOX, nous adoptons :
 - Démarrage instantané sans compilation lourde ni dépendance C++ externe.
 - Respect strict des critères d'acceptation (AC-01 à AC-10).
 - Évolution facilitée vers un packaging Electron ou Flutter/Tauri si souhaité ultérieurement.
+

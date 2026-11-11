@@ -74,3 +74,4 @@ export interface SearchResultItem extends Item {
   snippet?: string;
   matchScore?: number;
 }
+

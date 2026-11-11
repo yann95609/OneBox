@@ -12,3 +12,4 @@ La sécurité des données locales et la vie privée des utilisateurs sont au c�
 - **Absence de secrets** : Aucun identifiant ou clé secrète n'est inclus dans le code source.
 
 Pour signaler une vulnérabilité potentielle, veuillez ouvrir un rapport confidentiel ou contacter les mainteneurs du dépôt.
+

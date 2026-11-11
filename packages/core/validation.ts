@@ -67,3 +67,4 @@ export function detectMimeType(fileName: string): string {
 export function isImageMimeType(mime: string): boolean {
   return mime.startsWith('image/');
 }
+

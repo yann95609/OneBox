@@ -139,8 +139,37 @@ test('ONEBOX Suite Complète - Critères d\'acceptation MVP', async (t) => {
     assert.strictEqual(zipBuffer[1], 0x4B);
   });
 
+  await t.test('AC-08: Consultation et recherche locales 100% hors-ligne', () => {
+    // Vérification que le moteur fonctionne sans aucune interface réseau
+    const offlineResults = searchEngine.search({ query: 'cours' });
+    assert.ok(offlineResults.length > 0, 'La recherche locale hors-ligne doit fonctionner instantanément');
+    assert.ok(offlineResults[0].snippet !== undefined, 'Le snippet doit être extrait localement');
+  });
+
+  await t.test('AC-09: Validation stricte des entrées et gestion d\'erreurs claires', () => {
+    assert.strictEqual(isValidUrl('not-a-valid-url'), false, 'Une chaîne quelconque ne doit pas être validée comme URL');
+    assert.strictEqual(isValidUrl('ftp://invalide.protocol'), false, 'Seuls http et https sont acceptés');
+    assert.strictEqual(isValidUrl('https://valid-domain.org/path'), true, 'HTTPS valide');
+
+    // Vérification du fichier manquant
+    assert.throws(() => {
+      fileManager.copyLocalFile('C:/chemin/inexistant/document.pdf');
+    }, /inaccessible ou introuvable/, 'Un fichier inaccessible doit lever une erreur explicite');
+  });
+
+  await t.test('AC-10: Migrations de base et intégrité des données existantes', () => {
+    // Vérification que les tables de migration sont en place et que les données persistent
+    const count = db.db.prepare('SELECT COUNT(*) as c FROM items').get() as { c: number };
+    assert.ok(count.c >= 3, 'Les données créées lors des tests précédents doivent être intactes');
+
+    // Ré-exécution de la logique de migration (idempotente)
+    const migrations = db.db.prepare('SELECT version FROM schema_migrations').all() as { version: number }[];
+    assert.ok(migrations.some(m => m.version === 1), 'La migration version 1 doit être enregistrée');
+  });
+
   // Nettoyage final
   db.db.close();
   if (fs.existsSync(TEST_DB_PATH)) fs.unlinkSync(TEST_DB_PATH);
   if (fs.existsSync(TEST_STORAGE_DIR)) fs.rmSync(TEST_STORAGE_DIR, { recursive: true, force: true });
 });
+

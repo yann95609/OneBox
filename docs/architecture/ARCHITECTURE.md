@@ -40,3 +40,4 @@ ONEBOX est conçu selon le paradigme **Local-First**, où l'appareil de l'utilis
 - **FTS Recherche (Section 5.3)** : Indexation plein texte, tolérance aux accents et minuscules/majuscules via `unicode61`.
 - **Suppression & Restauration (Section 5.5)** : Corbeille logique réversible, suppression définitive avec purge des fichiers orphelins.
 - **Export & Manifeste (Section 5.6)** : Exportation en un clic d'une archive ZIP contenant `manifest.json`, `items.json`, `items.csv`, notes au format Markdown et pièces jointes.
+
