@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OneBox — Espace de Connaissances Personnel</title>
+  <title>OneBox — Espace Numérique Personnel</title>
   <link rel="icon" type="image/png" href="/assets/logo.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,7 +23,7 @@
               DEFAULT: '#0066FF',
               hover: '#0052CC',
               light: '#EBF3FF',
-              dark: '#003D99'
+              subtle: 'rgba(0, 102, 255, 0.08)'
             }
           }
         }
@@ -31,271 +31,329 @@
     }
   </script>
   <style>
+    :root {
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F8FAFC;
+      --bg-tertiary: #F1F5F9;
+      --border-color: #E2E8F0;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --card-bg: #FFFFFF;
+      --card-hover: #F8FAFC;
+    }
+    .dark {
+      --bg-primary: #090A0F;
+      --bg-secondary: #0F1117;
+      --bg-tertiary: #161822;
+      --border-color: #1E2230;
+      --text-main: #F1F5F9;
+      --text-muted: #8E98B0;
+      --card-bg: #12141D;
+      --card-hover: #171A26;
+    }
     body {
       font-family: '"Plus Jakarta Sans"', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       user-select: none;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
     }
     input, textarea, [contenteditable="true"] {
       user-select: text;
     }
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     ::-webkit-scrollbar-track {
       background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: rgba(150, 150, 150, 0.25);
+      background: rgba(140, 150, 170, 0.25);
       border-radius: 9999px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(150, 150, 150, 0.45);
+      background: rgba(140, 150, 170, 0.45);
     }
-    .prose-editor {
-      line-height: 1.75;
-      tab-size: 2;
+    .wysiwyg-content:focus {
+      outline: none;
     }
-    .markdown-rendered h1 {
-      font-size: 1.85rem;
+    .wysiwyg-content h1 {
+      font-size: 1.75rem;
       font-weight: 800;
-      margin-top: 1.5rem;
-      margin-bottom: 0.75rem;
+      margin: 1.25rem 0 0.5rem;
       letter-spacing: -0.025em;
-      border-bottom: 1px solid rgba(150,150,150,0.15);
-      padding-bottom: 0.35rem;
+      line-height: 1.25;
     }
-    .markdown-rendered h2 {
-      font-size: 1.45rem;
+    .wysiwyg-content h2 {
+      font-size: 1.35rem;
       font-weight: 700;
-      margin-top: 1.25rem;
-      margin-bottom: 0.5rem;
+      margin: 1rem 0 0.4rem;
       letter-spacing: -0.015em;
     }
-    .markdown-rendered h3 {
-      font-size: 1.2rem;
+    .wysiwyg-content h3 {
+      font-size: 1.15rem;
       font-weight: 600;
-      margin-top: 1rem;
-      margin-bottom: 0.4rem;
+      margin: 0.85rem 0 0.35rem;
     }
-    .markdown-rendered p {
-      margin-top: 0.5rem;
-      margin-bottom: 0.5rem;
+    .wysiwyg-content p {
+      margin: 0.45rem 0;
       line-height: 1.7;
     }
-    .markdown-rendered ul {
+    .wysiwyg-content ul {
       list-style-type: disc;
-      padding-left: 1.4rem;
+      padding-left: 1.5rem;
       margin: 0.5rem 0;
     }
-    .markdown-rendered ol {
+    .wysiwyg-content ol {
       list-style-type: decimal;
-      padding-left: 1.4rem;
+      padding-left: 1.5rem;
       margin: 0.5rem 0;
     }
-    .markdown-rendered blockquote {
+    .wysiwyg-content blockquote {
       border-left: 3px solid #0066FF;
       padding-left: 1rem;
-      font-style: italic;
-      color: rgba(150, 150, 150, 0.9);
       margin: 0.75rem 0;
+      font-style: italic;
+      color: var(--text-muted);
     }
-    .markdown-rendered pre {
-      background-color: rgba(0, 0, 0, 0.3);
-      padding: 0.85rem 1rem;
-      border-radius: 0.5rem;
+    .wysiwyg-content pre {
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      padding: 0.75rem 1rem;
+      border-radius: 0.6rem;
       font-family: '"JetBrains Mono"', monospace;
       font-size: 0.82rem;
-      overflow-x: auto;
       margin: 0.75rem 0;
-      border: 1px solid rgba(150,150,150,0.15);
+      overflow-x: auto;
     }
-    .markdown-rendered code:not(pre code) {
+    .wysiwyg-content code:not(pre code) {
       font-family: '"JetBrains Mono"', monospace;
-      font-size: 0.82em;
-      background: rgba(150, 150, 150, 0.15);
+      font-size: 0.85em;
+      background: var(--bg-tertiary);
       padding: 0.15rem 0.35rem;
-      border-radius: 0.25rem;
+      border-radius: 0.3rem;
+      border: 1px solid var(--border-color);
     }
-    .markdown-rendered a {
-      color: #0066FF;
-      text-decoration: underline;
-      text-underline-offset: 2px;
+    .callout-box {
+      border-radius: 0.75rem;
+      padding: 0.85rem 1rem;
+      margin: 0.75rem 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.88rem;
+    }
+    .callout-info {
+      background: rgba(0, 102, 255, 0.08);
+      border: 1px solid rgba(0, 102, 255, 0.2);
+    }
+    .callout-tip {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .callout-warning {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.2);
     }
     .task-item {
       display: flex;
       align-items: flex-start;
+      gap: 0.6rem;
       margin: 0.35rem 0;
       cursor: pointer;
     }
     .task-checkbox {
       margin-top: 0.25rem;
-      margin-right: 0.55rem;
-      cursor: pointer;
       accent-color: #0066FF;
-      width: 1rem;
-      height: 1rem;
-      border-radius: 0.25rem;
+      width: 1.05rem;
+      height: 1.05rem;
+      border-radius: 0.3rem;
+      cursor: pointer;
     }
     .task-done {
       text-decoration: line-through;
       opacity: 0.55;
     }
     .search-highlight {
-      background-color: rgba(255, 215, 0, 0.3);
-      color: inherit;
-      padding: 0 2px;
+      background-color: rgba(255, 215, 0, 0.35);
       border-radius: 2px;
-    }
-    .dark .search-highlight {
-      background-color: rgba(255, 215, 0, 0.25);
+      padding: 0 2px;
     }
   </style>
 </head>
-<body class="h-screen w-screen flex flex-col bg-white text-zinc-900 dark:bg-[#0E0F12] dark:text-[#E2E4E9] overflow-hidden">
+<body class="h-screen w-screen flex flex-col overflow-hidden">
 
-  <!-- ========================================== -->
-  <!-- 1. BARRE DE TITRE DESKTOP (Style macOS / Windows) -->
-  <!-- ========================================== -->
-  <header class="h-12 border-b border-zinc-200 dark:border-[#1E2026] bg-zinc-50/90 dark:bg-[#14151A]/95 backdrop-blur-md flex items-center justify-between px-3 shrink-0 select-none z-30">
-    <div class="flex items-center space-x-2.5">
-      <!-- Bouton Réduire/Déplier Navigation latérale (Ctrl+\) -->
-      <button onclick="toggleSidebar()" class="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-200/60 dark:hover:bg-[#20222A] transition-colors" title="Masquer / Afficher le panneau latéral (Ctrl+\)">
+  <!-- ======================================================== -->
+  <!-- 1. BARRE DE TITRE DESKTOP MODERNE (Linear / Notion style) -->
+  <!-- ======================================================== -->
+  <header class="h-12 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] flex items-center justify-between px-3 shrink-0 select-none z-30">
+    <div class="flex items-center space-x-2">
+      <!-- Bouton Sidebar (Ctrl+\) -->
+      <button onclick="toggleSidebar()" class="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:bg-[var(--bg-tertiary)] transition-colors" title="Masquer / Afficher la barre latérale (Ctrl+\)">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
       </button>
 
-      <!-- Logo Officiel (Icône Cube) et Nom -->
-      <div class="flex items-center space-x-2 pl-0.5">
-        <img src="/assets/logo.png" alt="Logo OneBox" class="w-5 h-5 rounded-md object-contain shadow-sm">
-        <span class="font-bold text-xs tracking-tight text-zinc-900 dark:text-zinc-100">OneBox</span>
+      <!-- Logo Officiel Cube Isométrique -->
+      <div class="flex items-center space-x-2 pl-0.5 cursor-pointer" onclick="setFilter('inbox')">
+        <img src="/assets/logo.png" alt="Logo OneBox" class="w-5 h-5 rounded object-contain shadow-sm">
+        <span class="font-extrabold text-xs tracking-tight">OneBox</span>
       </div>
 
-      <div class="h-3.5 w-[1px] bg-zinc-300 dark:bg-zinc-800 mx-1"></div>
+      <div class="h-3.5 w-[1px] bg-[var(--border-color)] mx-1"></div>
 
-      <!-- Statut Local Souverain -->
-      <span class="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium flex items-center space-x-1.5">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-500/20"></span>
-        <span class="hidden sm:inline">100% Hors-ligne</span>
-      </span>
+      <!-- Badge de souveraineté locale -->
+      <div class="flex items-center space-x-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-semibold">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        <span class="hidden sm:inline">100% Local & Hors-ligne</span>
+      </div>
     </div>
 
-    <!-- Actions globales au centre et à droite -->
-    <div class="flex items-center space-x-1.5">
+    <!-- Centre & Droite : Actions rapides & Command Palette -->
+    <div class="flex items-center space-x-2">
       
-      <!-- Palette de commandes rapide (Ctrl+K / Ctrl+P) -->
-      <button onclick="openCommandPalette()" class="hidden md:flex items-center space-x-2 px-2.5 py-1 rounded-lg bg-zinc-200/60 dark:bg-[#1A1C24] hover:bg-zinc-200 dark:hover:bg-[#242733] border border-zinc-300/50 dark:border-[#262835] text-zinc-500 dark:text-zinc-400 text-xs transition-colors" title="Ouvrir la palette de commandes rapide">
+      <!-- Palette de commandes globale (Ctrl+K) -->
+      <button onclick="openCommandPalette()" class="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[var(--bg-tertiary)] hover:bg-[var(--border-color)] border border-[var(--border-color)] text-xs text-[var(--text-muted)] transition-all" title="Recherche universelle & commandes (Ctrl+K)">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-        <span>Accès rapide...</span>
-        <kbd class="font-mono text-[10px] px-1 py-0.2 rounded bg-white dark:bg-[#121318] border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400">Ctrl+K</kbd>
+        <span id="labelQuickSearch">Recherche rapide...</span>
+        <kbd class="font-mono text-[10px] px-1 py-0.5 rounded bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-muted)]">Ctrl+K</kbd>
       </button>
 
-      <!-- Bouton Nouvelle Note Directe (Ctrl+N) -->
-      <button onclick="createNewNote()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-hover text-white text-xs font-semibold shadow-sm transition-all active:scale-[0.98]">
+      <!-- Bouton Nouvelle Note (Action primaire) -->
+      <button onclick="createNewNote()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-hover text-white text-xs font-bold shadow-sm transition-all active:scale-95">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-        <span class="hidden sm:inline">Nouvelle note</span>
+        <span>Nouvelle note</span>
         <span class="text-[10px] opacity-75 font-mono ml-0.5">Ctrl+N</span>
       </button>
 
-      <!-- Menu Déroulant Ajout Rapide (Lien, Fichier, Importer Markdown) -->
+      <!-- Menu Déroulant Ajout Rapide (Lien, Fichier, Image, Markdown) -->
       <div class="relative">
-        <button onclick="toggleQuickAddMenu()" class="p-1.5 rounded-lg border border-zinc-200 dark:border-[#252833] hover:bg-zinc-100 dark:hover:bg-[#1F212A] text-zinc-600 dark:text-zinc-300 transition-colors" title="Ajouter un lien ou un fichier">
+        <button onclick="toggleQuickAddMenu()" class="p-1.5 rounded-lg border border-[var(--border-color)] hover:bg-[var(--bg-tertiary)] text-[var(--text-muted)] transition-colors" title="Ajouter du contenu">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
         </button>
 
-        <div id="quickAddMenu" class="hidden absolute right-0 mt-1 w-52 rounded-xl bg-white dark:bg-[#181920] border border-zinc-200 dark:border-[#282A36] shadow-2xl py-1 text-xs z-50 animate-in fade-in zoom-in-95 duration-100">
-          <button onclick="promptAddLink()" class="w-full px-3 py-2 text-left hover:bg-zinc-100 dark:hover:bg-[#232530] flex items-center space-x-2">
-            <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-            <span>Enregistrer un lien web</span>
+        <div id="quickAddMenu" class="hidden absolute right-0 mt-1.5 w-56 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] shadow-2xl py-1 text-xs z-50 animate-in fade-in zoom-in-95 duration-100">
+          <button onclick="promptAddLink()" class="w-full px-3 py-2 text-left hover:bg-[var(--bg-tertiary)] flex items-center space-x-2.5">
+            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+            <div>
+              <p class="font-semibold">Enregistrer un lien web</p>
+              <p class="text-[10px] text-[var(--text-muted)]">Extrait auto du titre et description</p>
+            </div>
           </button>
-          <label class="w-full px-3 py-2 text-left hover:bg-zinc-100 dark:hover:bg-[#232530] flex items-center space-x-2 cursor-pointer">
-            <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-            <span>Importer un document / image</span>
+          
+          <label class="w-full px-3 py-2 text-left hover:bg-[var(--bg-tertiary)] flex items-center space-x-2.5 cursor-pointer">
+            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            <div>
+              <p class="font-semibold">Importer fichier ou image</p>
+              <p class="text-[10px] text-[var(--text-muted)]">Stockage sécurisé SHA-256</p>
+            </div>
             <input type="file" onchange="uploadDirectFile(event)" class="hidden">
           </label>
-          <label class="w-full px-3 py-2 text-left hover:bg-zinc-100 dark:hover:bg-[#232530] flex items-center space-x-2 cursor-pointer border-t border-zinc-100 dark:border-[#232530]">
-            <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            <span>Importer une note Markdown (.md)</span>
+
+          <label class="w-full px-3 py-2 text-left hover:bg-[var(--bg-tertiary)] flex items-center space-x-2.5 cursor-pointer border-t border-[var(--border-color)]">
+            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <div>
+              <p class="font-semibold">Importer une note (.md)</p>
+              <p class="text-[10px] text-[var(--text-muted)]">Importation fidèle de vos fichiers Markdown</p>
+            </div>
             <input type="file" accept=".md,.txt" onchange="importMarkdownFile(event)" class="hidden">
           </label>
         </div>
       </div>
 
-      <div class="h-4 w-[1px] bg-zinc-200 dark:bg-[#22242E] mx-1"></div>
+      <div class="h-4 w-[1px] bg-[var(--border-color)] mx-1"></div>
 
-      <!-- Basculer Thème Sombre / Clair -->
-      <button onclick="toggleTheme()" class="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-200/60 dark:hover:bg-[#20222A] transition-colors" title="Changer le thème">
+      <!-- Sélecteur de mode d'affichage (Liste vs Grille de cartes) -->
+      <div class="flex items-center bg-[var(--bg-tertiary)] p-0.5 rounded-lg border border-[var(--border-color)]">
+        <button onclick="setDisplayMode('list')" id="btnViewList" class="p-1 rounded text-brand bg-[var(--bg-primary)] shadow-sm" title="Vue Liste compacte">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <button onclick="setDisplayMode('cards')" id="btnViewCards" class="p-1 rounded text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white" title="Vue Grille de cartes">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+        </button>
+      </div>
+
+      <!-- Thème Sombre / Clair -->
+      <button onclick="toggleTheme()" class="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white hover:bg-[var(--bg-tertiary)] transition-colors" title="Basculer le thème">
         <svg id="themeIconSun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
         <svg id="themeIconMoon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
       </button>
 
-      <!-- Paramètres / Sauvegardes -->
-      <button onclick="openSettingsModal()" class="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-200/60 dark:hover:bg-[#20222A] transition-colors" title="Paramètres et sauvegardes">
+      <!-- Paramètres -->
+      <button onclick="openSettingsModal()" class="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white hover:bg-[var(--bg-tertiary)] transition-colors" title="Paramètres, sauvegardes et vie privée">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
       </button>
+
     </div>
   </header>
 
-  <!-- ========================================== -->
-  <!-- 2. CORPS PRINCIPAL (3 COLONNES STYLE OBSIDIAN / BEAR / APPLE NOTES) -->
-  <!-- ========================================== -->
+  <!-- ======================================================== -->
+  <!-- 2. CORPS DE L'APPLICATION (3 Colonnes Souples)           -->
+  <!-- ======================================================== -->
   <div class="flex-1 flex overflow-hidden">
 
-    <!-- COLONNE 1 : Navigation latérale (repliable) -->
-    <aside id="sidebarNav" class="w-60 border-r border-zinc-200 dark:border-[#1E2026] bg-zinc-50/70 dark:bg-[#121317] flex flex-col justify-between shrink-0 select-none p-2.5 transition-all duration-200">
+    <!-- COLONNE 1 : Navigation Bibliothèque & Tags -->
+    <aside id="sidebarNav" class="w-60 border-r border-[var(--border-color)] bg-[var(--bg-secondary)] flex flex-col justify-between shrink-0 select-none p-3 transition-all duration-200">
       <div class="space-y-4">
         
-        <!-- Section Bibliothèque Principale -->
+        <!-- Dossiers de la Bibliothèque -->
         <div class="space-y-0.5">
-          <p class="px-2.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Bibliothèque</p>
+          <p class="px-2.5 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-1.5">Bibliothèque</p>
           
-          <button onclick="setFilter('inbox')" id="nav-inbox" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-zinc-200/80 dark:bg-[#1E2129] text-zinc-900 dark:text-white transition-colors">
-            <div class="flex items-center space-x-2">
-              <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+          <button onclick="setFilter('inbox')" id="nav-inbox" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[var(--bg-tertiary)] text-brand transition-colors">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
               <span>Tous les éléments</span>
             </div>
-            <span id="badge-all-count" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono font-medium">0</span>
+            <span id="badge-all-count" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-muted)]">0</span>
           </button>
 
-          <button onclick="setFilter('favorites')" id="nav-favorites" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#1B1D24] transition-colors">
-            <div class="flex items-center space-x-2">
-              <svg class="w-3.5 h-3.5 text-amber-500 fill-amber-500" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-              <span>Favoris / Épinglés</span>
+          <button onclick="setFilter('favorites')" id="nav-favorites" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-main)] transition-colors">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-amber-500 fill-amber-500" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              <span>Favoris & Épinglés</span>
             </div>
-            <span id="badge-fav-count" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">0</span>
+            <span id="badge-fav-count" class="text-[10px] font-mono">0</span>
           </button>
 
-          <button onclick="setFilter('notes')" id="nav-notes" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#1B1D24] transition-colors">
-            <div class="flex items-center space-x-2">
-              <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <button onclick="setFilter('notes')" id="nav-notes" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-main)] transition-colors">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
               <span>Notes de texte</span>
             </div>
-            <span id="badge-notes-count" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">0</span>
+            <span id="badge-notes-count" class="text-[10px] font-mono">0</span>
           </button>
 
-          <button onclick="setFilter('links')" id="nav-links" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#1B1D24] transition-colors">
-            <div class="flex items-center space-x-2">
-              <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+          <button onclick="setFilter('links')" id="nav-links" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-main)] transition-colors">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
               <span>Liens web</span>
             </div>
-            <span id="badge-links-count" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">0</span>
+            <span id="badge-links-count" class="text-[10px] font-mono">0</span>
           </button>
 
-          <button onclick="setFilter('files')" id="nav-files" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#1B1D24] transition-colors">
-            <div class="flex items-center space-x-2">
-              <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-              <span>Fichiers & Documents</span>
+          <button onclick="setFilter('files')" id="nav-files" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-main)] transition-colors">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+              <span>Fichiers & Images</span>
             </div>
-            <span id="badge-files-count" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">0</span>
+            <span id="badge-files-count" class="text-[10px] font-mono">0</span>
+          </button>
+
+          <button onclick="setFilter('unclassified')" id="nav-unclassified" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-main)] transition-colors">
+            <div class="flex items-center space-x-2.5">
+              <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+              <span>Non classés</span>
+            </div>
+            <span id="badge-unclassified-count" class="text-[10px] font-mono">0</span>
           </button>
         </div>
 
-        <!-- Section Étiquettes avec pastilles de couleur -->
-        <div class="pt-2 border-t border-zinc-200 dark:border-[#1E2026]">
+        <!-- Section Étiquettes avec gestionnaire de couleurs -->
+        <div class="pt-2 border-t border-[var(--border-color)]">
           <div class="flex items-center justify-between px-2.5 mb-1.5">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Étiquettes</span>
-            <button onclick="promptCreateTag()" class="text-xs text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 p-0.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors" title="Créer une étiquette">+</button>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Étiquettes</span>
+            <button onclick="promptCreateTag()" class="p-1 rounded text-xs text-[var(--text-muted)] hover:text-brand hover:bg-[var(--bg-tertiary)] transition-colors" title="Nouvelle étiquette">+</button>
           </div>
           <div id="tagsListNav" class="space-y-0.5 max-h-48 overflow-y-auto pr-1">
             <!-- Rendu dynamique -->
@@ -304,149 +362,197 @@
 
       </div>
 
-      <!-- Bas de Navigation : Corbeille & Raccourci -->
-      <div class="pt-2 border-t border-zinc-200 dark:border-[#1E2026] space-y-1">
-        <button onclick="setFilter('trash')" id="nav-trash" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-500 hover:bg-zinc-200/50 dark:hover:bg-[#1B1D24] transition-colors">
-          <div class="flex items-center space-x-2">
-            <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+      <!-- Bas de la barre latérale : Corbeille & Raccourcis -->
+      <div class="pt-2 border-t border-[var(--border-color)] space-y-1">
+        <button onclick="setFilter('trash')" id="nav-trash" class="nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-500 hover:bg-rose-500/10 transition-colors">
+          <div class="flex items-center space-x-2.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             <span>Corbeille</span>
           </div>
-          <span id="badge-trash-count" class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">0</span>
+          <span id="badge-trash-count" class="text-[10px] font-mono text-rose-500">0</span>
         </button>
 
-        <div class="px-2.5 py-1 text-[10px] text-zinc-400 dark:text-zinc-600 flex items-center justify-between">
-          <span>v1.0.0 Local</span>
-          <span class="font-mono">SQLite WAL</span>
+        <div class="px-2.5 py-1 text-[10px] text-[var(--text-muted)] flex items-center justify-between font-mono">
+          <span>v1.0.0 Stable</span>
+          <span>SQLite WAL</span>
         </div>
       </div>
     </aside>
 
-    <!-- COLONNE 2 : Liste des notes & éléments (style Bear / Apple Notes) -->
-    <section class="w-80 border-r border-zinc-200 dark:border-[#1E2026] bg-white dark:bg-[#121317] flex flex-col shrink-0 select-none">
+    <!-- COLONNE 2 : Liste des notes & éléments avec tri, filtres et recherche -->
+    <section class="w-80 sm:w-88 border-r border-[var(--border-color)] bg-[var(--bg-primary)] flex flex-col shrink-0 select-none">
       
-      <!-- Barre de recherche et filtres de types -->
-      <div class="p-2.5 border-b border-zinc-200 dark:border-[#1E2026] space-y-2">
+      <!-- Barre d'outils de la liste -->
+      <div class="p-3 border-b border-[var(--border-color)] space-y-2.5">
+        
+        <!-- Champ de recherche FTS5 instantanée -->
         <div class="relative flex items-center">
-          <svg class="w-3.5 h-3.5 text-zinc-400 absolute left-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <svg class="w-3.5 h-3.5 text-[var(--text-muted)] absolute left-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           <input 
             id="searchInput" 
             type="text" 
-            placeholder="Rechercher... (Ctrl+K)" 
-            class="w-full pl-8 pr-7 py-1.5 rounded-lg text-xs bg-zinc-100 dark:bg-[#1A1C24] border border-transparent focus:border-brand focus:outline-none placeholder-zinc-400 text-zinc-800 dark:text-zinc-100 transition-all"
+            placeholder="Rechercher... (titre, texte, #tag)" 
+            class="w-full pl-9 pr-7 py-1.5 rounded-lg text-xs bg-[var(--bg-secondary)] border border-[var(--border-color)] focus:border-brand focus:outline-none placeholder-[var(--text-muted)] transition-all"
             autocomplete="off"
             spellcheck="false"
           >
-          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">✕</button>
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 text-xs text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white">✕</button>
         </div>
 
-        <!-- Filtres rapides par type (Pastilles) -->
-        <div class="flex items-center space-x-1 text-[11px] overflow-x-auto pb-0.5">
-          <button onclick="setQuickType('all')" id="chip-all" class="chip-filter px-2 py-0.5 rounded-md font-semibold bg-zinc-200 dark:bg-[#22242E] text-zinc-900 dark:text-white transition-colors">Tout</button>
-          <button onclick="setQuickType('note')" id="chip-note" class="chip-filter px-2 py-0.5 rounded-md font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#1A1C22] transition-colors">Notes</button>
-          <button onclick="setQuickType('link')" id="chip-link" class="chip-filter px-2 py-0.5 rounded-md font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#1A1C22] transition-colors">Liens</button>
-          <button onclick="setQuickType('file')" id="chip-file" class="chip-filter px-2 py-0.5 rounded-md font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#1A1C22] transition-colors">Fichiers</button>
+        <!-- Pastilles de filtres rapides & Sélecteur de Tri -->
+        <div class="flex items-center justify-between text-[11px]">
+          <div class="flex items-center space-x-1 overflow-x-auto pb-0.5">
+            <button onclick="setQuickType('all')" id="chip-all" class="chip-filter px-2 py-0.5 rounded-md font-bold bg-[var(--bg-tertiary)] text-[var(--text-main)] transition-colors">Tout</button>
+            <button onclick="setQuickType('note')" id="chip-note" class="chip-filter px-2 py-0.5 rounded-md font-medium text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] transition-colors">Notes</button>
+            <button onclick="setQuickType('link')" id="chip-link" class="chip-filter px-2 py-0.5 rounded-md font-medium text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] transition-colors">Liens</button>
+            <button onclick="setQuickType('file')" id="chip-file" class="chip-filter px-2 py-0.5 rounded-md font-medium text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] transition-colors">Fichiers</button>
+          </div>
+
+          <!-- Tri -->
+          <select id="sortSelect" onchange="handleSortChange(this.value)" class="bg-transparent border-0 text-[10px] text-[var(--text-muted)] focus:outline-none cursor-pointer">
+            <option value="date_desc">Récents</option>
+            <option value="date_asc">Anciens</option>
+            <option value="title_asc">Titre A-Z</option>
+            <option value="title_desc">Titre Z-A</option>
+          </select>
         </div>
       </div>
 
-      <!-- Bandeau d'actions si vue Corbeille -->
-      <div id="trashBannerHeader" class="hidden px-3 py-2 bg-amber-500/10 border-b border-amber-500/20 text-xs text-amber-600 dark:text-amber-400 flex items-center justify-between">
-        <span class="font-medium">Corbeille active</span>
-        <button onclick="emptyEntireTrash()" class="font-semibold underline hover:text-amber-700 dark:hover:text-amber-300">Vider</button>
+      <!-- Bandeau spécial Corbeille -->
+      <div id="trashBannerHeader" class="hidden px-3.5 py-2 bg-rose-500/10 border-b border-rose-500/20 text-xs text-rose-500 flex items-center justify-between">
+        <span class="font-medium">Éléments dans la corbeille</span>
+        <button onclick="emptyEntireTrash()" class="font-bold underline hover:text-rose-600">Tout vider</button>
       </div>
 
-      <!-- Liste des cartes déroulante -->
-      <div id="itemsListContainer" class="flex-1 overflow-y-auto divide-y divide-zinc-100 dark:divide-[#181A20] focus:outline-none" tabindex="0">
+      <!-- Conteneur de la liste d'éléments (soit Liste compacte soit Cartes) -->
+      <div id="itemsListContainer" class="flex-1 overflow-y-auto divide-y divide-[var(--border-color)] focus:outline-none" tabindex="0">
         <!-- Rendu dynamique -->
       </div>
     </section>
 
-    <!-- COLONNE 3 : Zone de travail / Éditeur & Rendu (style Apple Notes / Obsidian) -->
-    <main class="flex-1 flex flex-col bg-white dark:bg-[#0E0F12] overflow-hidden" id="workspaceMain">
+    <!-- COLONNE 3 : Espace central d'Édition et de Visualisation -->
+    <main class="flex-1 flex flex-col bg-[var(--bg-primary)] overflow-hidden" id="workspaceMain">
       
-      <!-- État vide (Aucune note sélectionnée) -->
-      <div id="emptyWorkspaceView" class="flex-1 flex flex-col items-center justify-center p-8 text-center text-zinc-400 select-none">
-        <div class="w-14 h-14 rounded-2xl bg-zinc-100 dark:bg-[#161720] flex items-center justify-center mb-3 text-zinc-400 border border-zinc-200 dark:border-[#222430]">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+      <!-- État d'Accueil & Première Ouverture (Section 6.1 du Cahier des Charges) -->
+      <div id="emptyWorkspaceView" class="flex-1 flex flex-col items-center justify-center p-8 text-center select-none overflow-y-auto">
+        <div class="w-16 h-16 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-center justify-center mb-4 shadow-sm">
+          <img src="/assets/logo.png" alt="Logo" class="w-10 h-10 object-contain">
         </div>
-        <p class="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Aucun élément sélectionné</p>
-        <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1 max-w-sm">
-          Sélectionnez une note dans la colonne centrale ou appuyez sur <kbd class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-[#1A1C24] border border-zinc-200 dark:border-zinc-800 text-[10px] font-mono">Ctrl+N</kbd> pour commencer à écrire.
+        
+        <h2 class="text-xl font-extrabold tracking-tight">Bienvenue dans ONEBOX</h2>
+        <p class="text-xs text-[var(--text-muted)] mt-1.5 max-w-md leading-relaxed">
+          Votre espace numérique personnel pour capturer, organiser et retrouver vos notes, liens et documents en toute souveraineté.
         </p>
+
+        <!-- 3 Actions d'accueil prioritaires (Section 6.1) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6 max-w-xl w-full text-left">
+          <div onclick="createNewNote()" class="p-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--card-bg)] hover:border-brand cursor-pointer transition-all shadow-sm group">
+            <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            </div>
+            <h4 class="font-bold text-xs">Créer une note</h4>
+            <p class="text-[11px] text-[var(--text-muted)] mt-0.5">Markdown riche & tâches</p>
+          </div>
+
+          <div onclick="promptAddLink()" class="p-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--card-bg)] hover:border-brand cursor-pointer transition-all shadow-sm group">
+            <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+            </div>
+            <h4 class="font-bold text-xs">Enregistrer un lien</h4>
+            <p class="text-[11px] text-[var(--text-muted)] mt-0.5">Aperçu web automatique</p>
+          </div>
+
+          <label class="p-3.5 rounded-xl border border-[var(--border-color)] bg-[var(--card-bg)] hover:border-brand cursor-pointer transition-all shadow-sm group block">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            </div>
+            <h4 class="font-bold text-xs">Importer un fichier</h4>
+            <p class="text-[11px] text-[var(--text-muted)] mt-0.5">Documents, PDF & images</p>
+            <input type="file" onchange="uploadDirectFile(event)" class="hidden">
+          </label>
+        </div>
+
+        <!-- Bouton Charger exemples de découverte -->
+        <button onclick="seedSampleContent()" class="mt-6 text-xs text-brand hover:underline font-semibold flex items-center space-x-1.5">
+          <span>✨ Charger des exemples de découverte</span>
+        </button>
       </div>
 
       <!-- Vue active de l'élément sélectionné -->
       <div id="activeWorkspaceView" class="flex-1 flex flex-col hidden overflow-hidden">
         
-        <!-- Barre d'avertissement Corbeille pour la note affichée -->
-        <div id="trashedItemWarning" class="hidden px-6 py-2.5 bg-rose-500/10 border-b border-rose-500/20 text-xs text-rose-600 dark:text-rose-400 flex items-center justify-between">
-          <span>Cet élément est actuellement dans la corbeille.</span>
+        <!-- Barre d'avertissement si élément dans la corbeille -->
+        <div id="trashedItemWarning" class="hidden px-6 py-2.5 bg-rose-500/10 border-b border-rose-500/20 text-xs text-rose-500 flex items-center justify-between">
           <div class="flex items-center space-x-2">
-            <button onclick="restoreCurrentItem()" class="px-2.5 py-1 rounded bg-rose-500 text-white font-semibold hover:bg-rose-600 transition-colors">Restaurer</button>
-            <button onclick="deleteCurrentItemPermanently()" class="px-2.5 py-1 rounded border border-rose-500/30 hover:bg-rose-500/20 transition-colors">Supprimer définitivement</button>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <span class="font-medium">Cet élément est dans la corbeille.</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="restoreCurrentItem()" class="px-3 py-1 rounded-lg bg-rose-500 text-white font-bold hover:bg-rose-600 transition-colors shadow-sm">Restaurer</button>
+            <button onclick="deleteCurrentItemPermanently()" class="px-3 py-1 rounded-lg border border-rose-500/30 hover:bg-rose-500/20 transition-colors">Supprimer définitivement</button>
           </div>
         </div>
 
         <!-- Barre d'outils supérieure de l'éditeur -->
-        <div class="h-11 border-b border-zinc-200 dark:border-[#1E2026] px-6 flex items-center justify-between shrink-0 bg-white/70 dark:bg-[#0E0F12]/70 backdrop-blur-sm select-none">
+        <div class="h-11 border-b border-[var(--border-color)] px-6 flex items-center justify-between shrink-0 bg-[var(--bg-primary)]/80 backdrop-blur-sm select-none">
           
-          <!-- Outils de mise en forme texte pour Notes -->
+          <!-- Outils d'édition de contenu (Blocs / Tâches / Citations) -->
           <div id="noteFormattingToolbar" class="flex items-center space-x-1">
             
-            <!-- Bascule Édition / Aperçu (Style Obsidian) -->
-            <div class="flex items-center bg-zinc-100 dark:bg-[#181A22] rounded-lg p-0.5 mr-2">
-              <button onclick="setViewMode('edit')" id="btnModeEdit" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-white dark:bg-[#252834] shadow-sm text-zinc-900 dark:text-white transition-colors">Éditer</button>
-              <button onclick="setViewMode('preview')" id="btnModePreview" class="px-2 py-0.5 rounded text-[11px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Aperçu</button>
-            </div>
+            <button onclick="formatSelection('bold')" class="p-1 rounded text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white hover:bg-[var(--bg-tertiary)] font-bold text-xs w-6 h-6 flex items-center justify-center" title="Gras (**texte**)">B</button>
+            <button onclick="formatSelection('italic')" class="p-1 rounded text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white hover:bg-[var(--bg-tertiary)] italic text-xs w-6 h-6 flex items-center justify-center" title="Italique (*texte*)">I</button>
+            <button onclick="formatSelection('h1')" class="p-1 rounded text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white hover:bg-[var(--bg-tertiary)] text-xs font-semibold px-1" title="Titre 1">H1</button>
+            <button onclick="formatSelection('h2')" class="p-1 rounded text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white hover:bg-[var(--bg-tertiary)] text-xs font-semibold px-1" title="Titre 2">H2</button>
+            
+            <div class="h-3 w-[1px] bg-[var(--border-color)] mx-1"></div>
 
-            <!-- Boutons de formatage markdown direct -->
-            <button onclick="formatSelection('bold')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] font-bold text-xs w-6 h-6 flex items-center justify-center" title="Gras (**texte**)">B</button>
-            <button onclick="formatSelection('italic')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] italic text-xs w-6 h-6 flex items-center justify-center" title="Italique (*texte*)">I</button>
-            <button onclick="formatSelection('h1')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-xs font-semibold px-1" title="Grand Titre">H1</button>
-            <button onclick="formatSelection('h2')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-xs font-semibold px-1" title="Sous-titre">H2</button>
-            <div class="h-3 w-[1px] bg-zinc-200 dark:bg-zinc-800 mx-1"></div>
-            <button onclick="formatSelection('check')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-xs px-1" title="Case à cocher cliquable (- [ ])">☑ Tâche</button>
-            <button onclick="formatSelection('bullet')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-xs px-1" title="Liste à puces">• Liste</button>
-            <button onclick="formatSelection('quote')" class="p-1 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-xs px-1" title="Citation">“ Citation</button>
+            <button onclick="formatSelection('check')" class="p-1 rounded text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white hover:bg-[var(--bg-tertiary)] text-xs px-1.5 flex items-center space-x-1" title="Case à cocher cliquable">
+              <span>☑ Tâche</span>
+            </button>
+            <button onclick="formatSelection('bullet')" class="p-1 rounded text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white hover:bg-[var(--bg-tertiary)] text-xs px-1.5" title="Liste à puces">• Liste</button>
+            <button onclick="formatSelection('callout')" class="p-1 rounded text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white hover:bg-[var(--bg-tertiary)] text-xs px-1.5" title="Encadré d'information">💡 Encadré</button>
+            <button onclick="formatSelection('quote')" class="p-1 rounded text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white hover:bg-[var(--bg-tertiary)] text-xs px-1" title="Citation">“ Citation</button>
+            <button onclick="formatSelection('code')" class="p-1 rounded text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white hover:bg-[var(--bg-tertiary)] text-xs px-1 font-mono" title="Code en ligne">&lt;/&gt;</button>
           </div>
 
-          <!-- Actions de gestion de l'élément (Épingler, Dupliquer, Exporter, Supprimer) -->
+          <!-- Actions de gestion de l'élément (Épingler, Dupliquer, Exporter, Corbeille) -->
           <div class="flex items-center space-x-1">
-            <!-- Épingler -->
-            <button onclick="toggleActiveFavorite()" id="btnActiveFav" class="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-zinc-400 hover:text-amber-500 transition-colors" title="Épingler en haut">
+            <!-- Bouton Favori -->
+            <button onclick="toggleActiveFavorite()" id="btnActiveFav" class="p-1.5 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-muted)] hover:text-amber-500 transition-colors" title="Épingler en haut">
               <svg id="iconActiveFav" class="w-4 h-4 fill-none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
             </button>
 
             <!-- Dupliquer (Ctrl+D) -->
-            <button onclick="duplicateCurrentItem()" class="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors" title="Dupliquer la note (Ctrl+D)">
+            <button onclick="duplicateCurrentItem()" class="p-1.5 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors" title="Dupliquer l'élément (Ctrl+D)">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
             </button>
 
             <!-- Exporter -->
-            <button onclick="exportCurrentItem()" class="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors" title="Exporter (Markdown / Document)">
+            <button onclick="exportCurrentItem()" class="p-1.5 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors" title="Exporter cet élément (Markdown / Document)">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
             </button>
 
-            <!-- Supprimer -->
-            <button onclick="deleteCurrentItem()" class="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-[#1C1E26] text-zinc-400 hover:text-rose-500 transition-colors" title="Mettre à la corbeille">
+            <!-- Supprimer / Corbeille -->
+            <button onclick="deleteCurrentItem()" class="p-1.5 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-muted)] hover:text-rose-500 transition-colors" title="Déplacer dans la corbeille">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
           </div>
         </div>
 
-        <!-- Zone d'écriture et de lecture centrée (distraction-free) -->
+        <!-- Zone de lecture et d'écriture (Style Notion / Craft) -->
         <div class="flex-1 overflow-y-auto px-8 py-6 max-w-3xl mx-auto w-full space-y-4">
           
-          <!-- Titre (éditable directement au clavier) -->
+          <!-- Titre principal en place -->
           <input 
             id="editorTitleInput" 
             type="text" 
             placeholder="Sans titre" 
-            class="w-full text-2xl sm:text-3xl font-extrabold bg-transparent border-0 focus:outline-none tracking-tight text-zinc-900 dark:text-zinc-100 placeholder-zinc-300 dark:placeholder-zinc-700"
+            class="w-full text-2xl sm:text-3xl font-extrabold bg-transparent border-0 focus:outline-none tracking-tight placeholder-[var(--text-muted)]"
             oninput="handleContentChange()"
           >
 
-          <!-- Métadonnées et Étiquettes -->
-          <div class="flex items-center space-x-2 text-xs text-zinc-400 select-none pb-2 border-b border-zinc-100 dark:border-[#1A1C22]">
+          <!-- Métadonnées & Étiquettes -->
+          <div class="flex items-center space-x-2 text-xs text-[var(--text-muted)] select-none pb-2 border-b border-[var(--border-color)]">
             <span id="editorDateLabel" class="font-mono text-[11px]"></span>
             <span>•</span>
             <div id="editorTagsContainer" class="flex items-center space-x-1.5 flex-wrap">
@@ -454,19 +560,22 @@
             </div>
           </div>
 
-          <!-- Conteneur d'édition ou aperçu -->
+          <!-- Corps du contenu selon le type -->
           <div id="editorBodyContainer" class="pt-2">
-            <!-- Rendu dynamique (Note textarea, Note Markdown aperçu, Lien, Image, Fichier) -->
+            <!-- Rendu dynamique -->
           </div>
 
         </div>
 
-        <!-- Pied de page de l'éditeur (Compteur de mots & Statut local) -->
-        <div class="h-8 border-t border-zinc-200 dark:border-[#1E2026] px-6 flex items-center justify-between text-[11px] text-zinc-400 font-mono shrink-0 bg-zinc-50/50 dark:bg-[#101115]/50 select-none">
+        <!-- Barre de statut inférieure desktop -->
+        <div class="h-8 border-t border-[var(--border-color)] px-6 flex items-center justify-between text-[11px] text-[var(--text-muted)] font-mono shrink-0 bg-[var(--bg-secondary)] select-none">
           <div class="flex items-center space-x-2">
-            <span id="saveStatusIndicator" class="text-zinc-400">Enregistré</span>
-            <span class="text-zinc-300 dark:text-zinc-700">•</span>
-            <span class="text-emerald-500 font-medium">Local SQLite</span>
+            <span id="saveStatusIndicator" class="text-emerald-500 font-semibold flex items-center space-x-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span>Enregistré en local</span>
+            </span>
+            <span>•</span>
+            <span>SQLite WAL</span>
           </div>
           <span id="editorStatsCounter"></span>
         </div>
@@ -476,26 +585,26 @@
 
   </div>
 
-  <!-- ========================================== -->
-  <!-- 3. MENUS CONTEXTUELS ET MODALES DESKTOP -->
-  <!-- ========================================== -->
+  <!-- ======================================================== -->
+  <!-- 3. MENUS CONTEXTUELS, PALETTES & MODALES                 -->
+  <!-- ======================================================== -->
 
-  <!-- Menu Contextuel Clic Droit sur les notes (comme dans Obsidian / Apple Notes) -->
-  <div id="cardContextMenu" class="hidden fixed bg-white dark:bg-[#1A1C24] border border-zinc-200 dark:border-[#282B38] rounded-xl shadow-2xl py-1 text-xs z-50 w-52 text-zinc-700 dark:text-zinc-200 divide-y divide-zinc-100 dark:divide-[#252834]">
+  <!-- Menu Contextuel Clic Droit sur les cartes -->
+  <div id="cardContextMenu" class="hidden fixed bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl shadow-2xl py-1 text-xs z-50 w-52 divide-y divide-[var(--border-color)]">
     <div class="py-1">
-      <button onclick="contextActionPin()" class="w-full px-3 py-1.5 text-left hover:bg-zinc-100 dark:hover:bg-[#252834] flex items-center space-x-2">
-        <span id="contextPinLabel">Épingler</span>
+      <button onclick="contextActionPin()" class="w-full px-3 py-1.5 text-left hover:bg-[var(--bg-tertiary)] flex items-center space-x-2">
+        <span id="contextPinLabel">Épingler en haut</span>
       </button>
-      <button onclick="contextActionDuplicate()" class="w-full px-3 py-1.5 text-left hover:bg-zinc-100 dark:hover:bg-[#252834] flex items-center space-x-2">
-        <span>Dupliquer</span>
-        <span class="ml-auto text-[10px] text-zinc-400 font-mono">Ctrl+D</span>
+      <button onclick="contextActionDuplicate()" class="w-full px-3 py-1.5 text-left hover:bg-[var(--bg-tertiary)] flex items-center space-x-2">
+        <span>Dupliquer la note</span>
+        <span class="ml-auto text-[10px] text-[var(--text-muted)] font-mono">Ctrl+D</span>
       </button>
-      <button onclick="contextActionExport()" class="w-full px-3 py-1.5 text-left hover:bg-zinc-100 dark:hover:bg-[#252834] flex items-center space-x-2">
+      <button onclick="contextActionExport()" class="w-full px-3 py-1.5 text-left hover:bg-[var(--bg-tertiary)] flex items-center space-x-2">
         <span>Exporter</span>
       </button>
     </div>
     <div class="py-1">
-      <button onclick="contextActionDelete()" class="w-full px-3 py-1.5 text-left hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 flex items-center space-x-2">
+      <button onclick="contextActionDelete()" class="w-full px-3 py-1.5 text-left hover:bg-rose-500/10 text-rose-500 flex items-center space-x-2">
         <span>Mettre à la corbeille</span>
         <span class="ml-auto text-[10px] font-mono">Suppr</span>
       </button>
@@ -503,91 +612,97 @@
   </div>
 
   <!-- Palette de Commandes Rapide (Ctrl+K / Ctrl+P style Raycast / Obsidian) -->
-  <div id="commandPaletteModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-24 hidden p-4">
-    <div class="bg-white dark:bg-[#16171E] border border-zinc-200 dark:border-[#262835] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+  <div id="commandPaletteModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-20 hidden p-4">
+    <div class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
       
-      <div class="p-3 border-b border-zinc-200 dark:border-[#222430] flex items-center space-x-2">
-        <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      <div class="p-3 border-b border-[var(--border-color)] flex items-center space-x-2.5">
+        <svg class="w-4 h-4 text-[var(--text-muted)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         <input 
           id="paletteSearchInput" 
           type="text" 
-          placeholder="Taper une commande ou chercher une note..." 
-          class="w-full bg-transparent border-0 focus:outline-none text-sm text-zinc-800 dark:text-zinc-100 placeholder-zinc-400"
+          placeholder="Taper une commande ou le titre d'une note..." 
+          class="w-full bg-transparent border-0 focus:outline-none text-sm text-[var(--text-main)] placeholder-[var(--text-muted)]"
           autocomplete="off"
         >
-        <kbd class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-[#20232E] text-zinc-400">Échap</kbd>
+        <kbd class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border-color)] text-[var(--text-muted)]">Échap</kbd>
       </div>
 
-      <div id="paletteResultsList" class="max-h-80 overflow-y-auto divide-y divide-zinc-100 dark:divide-[#1F212B] p-1 text-xs">
-        <!-- Rendu dynamique des actions et notes -->
+      <div id="paletteResultsList" class="max-h-80 overflow-y-auto divide-y divide-[var(--border-color)] p-1 text-xs">
+        <!-- Rendu dynamique -->
       </div>
     </div>
   </div>
 
-  <!-- Modal Paramètres & Sauvegardes -->
+  <!-- Modale Paramètres, Sauvegardes & Vie Privée (Sections 5.6 & 11) -->
   <div id="settingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-white dark:bg-[#16171E] border border-zinc-200 dark:border-[#262835] rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-100">
-      <div class="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-[#222430]">
-        <h3 class="font-bold text-sm">Paramètres & Sauvegardes</h3>
-        <button onclick="closeSettingsModal()" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-white">✕</button>
+    <div class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-4 animate-in fade-in zoom-in-95 duration-100">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+        <div class="flex items-center space-x-2">
+          <img src="/assets/logo.png" alt="Logo" class="w-5 h-5 rounded">
+          <h3 class="font-bold text-sm">Paramètres & Souveraineté</h3>
+        </div>
+        <button onclick="closeSettingsModal()" class="text-[var(--text-muted)] hover:text-[var(--text-main)]">✕</button>
       </div>
 
       <div class="space-y-4 text-xs">
         <div>
-          <label class="block text-zinc-400 font-medium mb-1.5">Emplacement de stockage local</label>
-          <input id="settingStoragePath" type="text" readonly class="w-full px-3 py-2 rounded-lg bg-zinc-100 dark:bg-[#1C1E26] border border-zinc-200 dark:border-[#262933] font-mono text-[11px] text-zinc-500">
+          <label class="block text-[var(--text-muted)] font-medium mb-1">Dossier de stockage local</label>
+          <input id="settingStoragePath" type="text" readonly class="w-full px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-color)] font-mono text-[11px] text-[var(--text-muted)]">
         </div>
 
-        <div class="p-3.5 rounded-xl bg-zinc-50 dark:bg-[#1A1C24] border border-zinc-200 dark:border-[#262833] space-y-2.5">
-          <p class="font-semibold text-zinc-700 dark:text-zinc-200">Sauvegardes de vos données</p>
-          <p class="text-zinc-400 text-[11px]">Exportez ou restaurez l'intégralité de vos notes, liens et pièces jointes en format ouvert.</p>
+        <div class="p-3.5 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-color)] space-y-2.5">
+          <p class="font-bold">Sauvegardes complètes (Section 5.6)</p>
+          <p class="text-[var(--text-muted)] text-[11px]">Exportez ou restaurez l'intégralité de vos notes, liens et pièces jointes avec manifeste SHA-256.</p>
           
           <div class="flex space-x-2 pt-1">
-            <button onclick="downloadBackupZip()" class="flex-1 py-2 px-3 rounded-lg bg-brand hover:bg-brand-hover text-white font-semibold transition-colors text-center shadow-sm">
+            <button onclick="downloadBackupZip()" class="flex-1 py-2 px-3 rounded-lg bg-brand hover:bg-brand-hover text-white font-bold transition-colors text-center shadow-sm">
               Exporter en ZIP
             </button>
-            <label class="flex-1 py-2 px-3 rounded-lg bg-white dark:bg-[#22242E] hover:bg-zinc-100 dark:hover:bg-[#282B38] border border-zinc-300 dark:border-[#303340] font-semibold text-center cursor-pointer transition-colors text-zinc-700 dark:text-zinc-200">
+            <label class="flex-1 py-2 px-3 rounded-lg bg-[var(--bg-primary)] hover:bg-[var(--bg-tertiary)] border border-[var(--border-color)] font-semibold text-center cursor-pointer transition-colors text-[var(--text-main)]">
               <span>Restaurer JSON</span>
               <input type="file" accept=".json" onchange="handleRestoreFile(event)" class="hidden">
             </label>
           </div>
         </div>
 
-        <div class="pt-2 text-[11px] text-zinc-500 space-y-1">
-          <p>Application locale sécurisée • Licence Apache 2.0</p>
-          <p>Zéro publicité, zéro traceur. Vos données vous appartiennent.</p>
+        <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 space-y-1">
+          <p class="font-bold">Garanties de Confidentialité</p>
+          <p class="text-[11px] leading-relaxed">Zéro cloud obligatoire, zéro tracking publicitaire. Toutes vos informations restent stockées exclusivement sur votre disque dur.</p>
         </div>
       </div>
 
-      <div class="flex justify-end pt-2 border-t border-zinc-200 dark:border-[#222430]">
-        <button onclick="closeSettingsModal()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-zinc-200 dark:bg-[#252833] hover:bg-zinc-300 dark:hover:bg-[#2F3240] transition-colors">Fermer</button>
+      <div class="flex justify-between items-center pt-3 border-t border-[var(--border-color)] text-[11px] text-[var(--text-muted)]">
+        <span>Licence Apache 2.0</span>
+        <button onclick="closeSettingsModal()" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--border-color)] transition-colors">Fermer</button>
       </div>
     </div>
   </div>
 
   <!-- Toast Notification Discret -->
-  <div id="toast" class="fixed bottom-5 right-5 px-4 py-2 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 text-xs font-semibold shadow-2xl opacity-0 pointer-events-none transition-all duration-200 z-50 flex items-center space-x-2">
+  <div id="toast" class="fixed bottom-5 right-5 px-4 py-2.5 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 text-xs font-bold shadow-2xl opacity-0 pointer-events-none transition-all duration-200 z-50 flex items-center space-x-2">
     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
     <span id="toastMessage">Enregistré</span>
   </div>
 
-  <!-- ========================================== -->
-  <!-- 4. LOGIQUE CLIENT REACTIVE PURE VANILLA JS -->
-  <!-- ========================================== -->
+  <!-- ======================================================== -->
+  <!-- 4. LOGIQUE CLIENT REACTIVE PURE VANILLA JS                -->
+  <!-- ======================================================== -->
   <script>
     let activeFilter = 'inbox';
     let activeType = 'all';
     let activeTagId = null;
     let searchQuery = '';
+    let sortOrder = 'date_desc';
+    let displayMode = 'list'; // 'list' ou 'cards'
     let items = [];
     let tags = [];
     let activeItem = null;
     let autoSaveTimer = null;
     let isSidebarOpen = true;
-    let viewMode = 'edit'; // 'edit' ou 'preview'
     let contextMenuItemId = null;
 
-    // --- Gestion du Thème ---
+    // --- Thème & Affichage ---
     function initTheme() {
       const isDark = localStorage.getItem('onebox_theme') !== 'light';
       document.documentElement.classList.toggle('dark', isDark);
@@ -605,11 +720,18 @@
     function toggleSidebar() {
       const sb = document.getElementById('sidebarNav');
       isSidebarOpen = !isSidebarOpen;
-      if (isSidebarOpen) {
-        sb.classList.remove('-ml-60');
-      } else {
-        sb.classList.add('-ml-60');
-      }
+      sb.classList.toggle('-ml-60', !isSidebarOpen);
+    }
+
+    function setDisplayMode(mode) {
+      displayMode = mode;
+      document.getElementById('btnViewList').className = mode === 'list'
+        ? 'p-1 rounded text-brand bg-[var(--bg-primary)] shadow-sm'
+        : 'p-1 rounded text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white';
+      document.getElementById('btnViewCards').className = mode === 'cards'
+        ? 'p-1 rounded text-brand bg-[var(--bg-primary)] shadow-sm'
+        : 'p-1 rounded text-[var(--text-muted)] hover:text-zinc-900 dark:hover:text-white';
+      renderItemsList();
     }
 
     function showToast(msg) {
@@ -634,18 +756,18 @@
     function renderTagsNav() {
       const container = document.getElementById('tagsListNav');
       if (tags.length === 0) {
-        container.innerHTML = '<span class="text-[11px] text-zinc-400 px-2.5 italic">Aucune étiquette</span>';
+        container.innerHTML = '<span class="text-[11px] text-[var(--text-muted)] px-2.5 italic">Aucune étiquette</span>';
         return;
       }
       container.innerHTML = tags.map(tag => `
-        <div onclick="filterByTag('${tag.id}')" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer ${activeTagId === tag.id ? 'bg-zinc-200/80 dark:bg-[#1E2129] font-bold text-zinc-900 dark:text-white' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#181A20]'}">
+        <div onclick="filterByTag('${tag.id}')" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer ${activeTagId === tag.id ? 'bg-[var(--bg-tertiary)] font-bold text-brand' : 'text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-main)]'}">
           <div class="flex items-center space-x-2 truncate">
-            <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${tag.color || '#0066FF'}"></span>
+            <span class="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm" style="background-color: ${tag.color || '#0066FF'}"></span>
             <span class="truncate">${escapeHtml(tag.name)}</span>
           </div>
           <div class="flex items-center space-x-1">
-            <span class="text-[10px] text-zinc-400 opacity-60 group-hover:opacity-0">${tag.count || 0}</span>
-            <button onclick="event.stopPropagation(); deleteTag('${tag.id}')" class="opacity-0 group-hover:opacity-100 hover:text-rose-500 text-zinc-400 text-xs px-1">✕</button>
+            <span class="text-[10px] text-[var(--text-muted)] group-hover:opacity-0">${tag.count || 0}</span>
+            <button onclick="event.stopPropagation(); deleteTag('${tag.id}')" class="opacity-0 group-hover:opacity-100 hover:text-rose-500 text-xs px-1" title="Supprimer">✕</button>
           </div>
         </div>
       `).join('');
@@ -660,24 +782,23 @@
         else if (activeFilter === 'notes') params.append('type', 'note');
         else if (activeFilter === 'links') params.append('type', 'link');
         else if (activeFilter === 'files') params.append('type', 'file');
+        else if (activeFilter === 'unclassified') params.append('unclassified', 'true');
 
         if (activeType !== 'all') {
           params.set('type', activeType);
         }
-
         if (activeTagId) params.append('tagId', activeTagId);
 
         const res = await fetch('/api/items?' + params.toString());
         const data = await res.json();
         items = data.items || [];
+        
+        sortLoadedItems();
         renderItemsList();
         updateCounts();
 
-        // Afficher ou masquer le bandeau vider la corbeille
         const trashBanner = document.getElementById('trashBannerHeader');
-        if (trashBanner) {
-          trashBanner.classList.toggle('hidden', activeFilter !== 'trash' || items.length === 0);
-        }
+        trashBanner.classList.toggle('hidden', activeFilter !== 'trash' || items.length === 0);
 
         if (activeItem && !items.some(i => i.id === activeItem.id)) {
           if (items.length > 0) {
@@ -691,46 +812,69 @@
       }
     }
 
+    function sortLoadedItems() {
+      items.sort((a, b) => {
+        if (sortOrder === 'date_desc') return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
+        if (sortOrder === 'date_asc') return new Date(a.updated_at || a.created_at) - new Date(b.updated_at || b.created_at);
+        if (sortOrder === 'title_asc') return (a.title || '').localeCompare(b.title || '');
+        if (sortOrder === 'title_desc') return (b.title || '').localeCompare(a.title || '');
+        return 0;
+      });
+    }
+
+    function handleSortChange(val) {
+      sortOrder = val;
+      sortLoadedItems();
+      renderItemsList();
+    }
+
     function renderItemsList() {
       const container = document.getElementById('itemsListContainer');
       if (items.length === 0) {
         container.innerHTML = `
-          <div class="p-8 text-center text-zinc-400 text-xs space-y-1">
-            <p class="font-medium text-zinc-500">Aucun élément trouvé</p>
-            <p class="text-[11px] text-zinc-400">Créez une note avec <kbd class="px-1 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 font-mono">Ctrl+N</kbd>.</p>
+          <div class="p-8 text-center text-xs space-y-1">
+            <p class="font-bold text-[var(--text-muted)]">Aucun élément</p>
+            <p class="text-[11px] text-[var(--text-muted)]">Cliquez sur "Nouvelle note" pour commencer.</p>
           </div>
         `;
         return;
       }
 
-      const pinnedItems = items.filter(i => i.favorite === 1 && activeFilter !== 'favorites' && activeFilter !== 'trash');
-      const regularItems = items.filter(i => i.favorite !== 1 || activeFilter === 'favorites' || activeFilter === 'trash');
+      if (displayMode === 'cards') {
+        // Vue Grille de cartes riche
+        container.className = 'flex-1 overflow-y-auto p-3 grid grid-cols-1 gap-2.5 focus:outline-none';
+        container.innerHTML = items.map(item => renderItemCardGrid(item)).join('');
+      } else {
+        // Vue Liste compacte élégante
+        container.className = 'flex-1 overflow-y-auto divide-y divide-[var(--border-color)] focus:outline-none';
+        
+        const pinnedItems = items.filter(i => i.favorite === 1 && activeFilter !== 'favorites' && activeFilter !== 'trash');
+        const regularItems = items.filter(i => i.favorite !== 1 || activeFilter === 'favorites' || activeFilter === 'trash');
 
-      let html = '';
-
-      if (pinnedItems.length > 0) {
-        html += `
-          <div class="px-3 pt-2.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Épinglés</div>
-          ${pinnedItems.map(item => renderItemCard(item)).join('')}
-          <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Notes récentes</div>
-        `;
+        let html = '';
+        if (pinnedItems.length > 0) {
+          html += `
+            <div class="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Épinglés</div>
+            ${pinnedItems.map(item => renderItemCardList(item)).join('')}
+            <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Récents</div>
+          `;
+        }
+        html += regularItems.map(item => renderItemCardList(item)).join('');
+        container.innerHTML = html;
       }
-
-      html += regularItems.map(item => renderItemCard(item)).join('');
-      container.innerHTML = html;
     }
 
-    function renderItemCard(item) {
+    function renderItemCardList(item) {
       const isSelected = activeItem && activeItem.id === item.id;
       const dateStr = formatRelativeDate(item.updated_at || item.created_at);
       const isFav = item.favorite === 1;
 
-      const typeLabels = {
-        note: 'Note',
-        link: 'Lien',
-        file: 'Fichier',
-        image: 'Image'
-      };
+      const typeBadge = {
+        note: '<span class="text-indigo-500">Note</span>',
+        link: '<span class="text-blue-500">Lien</span>',
+        file: '<span class="text-emerald-500">Fichier</span>',
+        image: '<span class="text-amber-500">Photo</span>'
+      }[item.type] || item.type;
 
       const titleHtml = highlightText(escapeHtml(item.title || 'Sans titre'), searchQuery);
       const snippetRaw = item.snippet || (item.note ? item.note.body_text : (item.description || ''));
@@ -740,30 +884,56 @@
         <div 
           onclick="selectItem('${item.id}')" 
           oncontextmenu="handleCardContextMenu(event, '${item.id}')"
-          class="item-card p-3.5 cursor-pointer transition-all select-none ${isSelected ? 'bg-brand/10 dark:bg-brand/15 border-l-2 border-brand' : 'hover:bg-zinc-50 dark:hover:bg-[#16171D]'}"
+          class="item-card p-3 cursor-pointer transition-all select-none ${isSelected ? 'bg-brand/10 border-l-2 border-brand' : 'hover:bg-[var(--card-hover)]'}"
           data-id="${item.id}"
         >
           <div class="flex items-start justify-between space-x-2">
-            <h4 class="text-xs font-bold truncate flex-1 ${isSelected ? 'text-brand dark:text-blue-400' : 'text-zinc-800 dark:text-zinc-200'}">
+            <h4 class="text-xs font-bold truncate flex-1 ${isSelected ? 'text-brand' : ''}">
               ${titleHtml}
             </h4>
             <div class="flex items-center space-x-1 shrink-0">
               ${isFav ? '<span class="text-amber-500 text-xs">★</span>' : ''}
-              <span class="text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded bg-zinc-200/70 dark:bg-[#1E2028] text-zinc-500">
-                ${typeLabels[item.type] || item.type}
+              <span class="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-[var(--bg-tertiary)] text-[var(--text-muted)]">
+                ${typeBadge}
               </span>
             </div>
           </div>
           
-          <p class="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-2 mt-1 leading-snug">
+          <p class="text-[11px] text-[var(--text-muted)] line-clamp-2 mt-1 leading-snug">
             ${snippetHtml}
           </p>
 
-          <div class="mt-2 flex items-center justify-between text-[10px] text-zinc-400">
+          <div class="mt-2 flex items-center justify-between text-[10px] text-[var(--text-muted)]">
             <span>${dateStr}</span>
             <div class="flex items-center space-x-1">
-              ${(item.tags || []).slice(0, 2).map(t => `<span class="px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-[#1B1D25] text-[10px]">#${escapeHtml(t.name)}</span>`).join('')}
+              ${(item.tags || []).slice(0, 2).map(t => `<span class="px-1.5 py-0.2 rounded bg-[var(--bg-tertiary)] font-medium">#${escapeHtml(t.name)}</span>`).join('')}
             </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderItemCardGrid(item) {
+      const isSelected = activeItem && activeItem.id === item.id;
+      const dateStr = formatRelativeDate(item.updated_at || item.created_at);
+      const isFav = item.favorite === 1;
+
+      return `
+        <div 
+          onclick="selectItem('${item.id}')" 
+          oncontextmenu="handleCardContextMenu(event, '${item.id}')"
+          class="p-3.5 rounded-xl border ${isSelected ? 'border-brand ring-1 ring-brand bg-brand/5' : 'border-[var(--border-color)] bg-[var(--card-bg)] hover:border-brand/40'} cursor-pointer transition-all shadow-sm"
+        >
+          <div class="flex items-start justify-between">
+            <h4 class="font-bold text-xs truncate flex-1 ${isSelected ? 'text-brand' : ''}">${escapeHtml(item.title || 'Sans titre')}</h4>
+            ${isFav ? '<span class="text-amber-500 text-xs ml-1">★</span>' : ''}
+          </div>
+          <p class="text-[11px] text-[var(--text-muted)] line-clamp-3 mt-1.5 leading-snug">
+            ${escapeHtml(item.snippet || (item.note ? item.note.body_text : (item.description || '')))}
+          </p>
+          <div class="mt-3 pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-[10px] text-[var(--text-muted)]">
+            <span>${dateStr}</span>
+            <span class="uppercase font-mono text-[9px] px-1 rounded bg-[var(--bg-tertiary)]">${item.type}</span>
           </div>
         </div>
       `;
@@ -779,18 +949,12 @@
         document.getElementById('emptyWorkspaceView').classList.add('hidden');
         document.getElementById('activeWorkspaceView').classList.remove('hidden');
 
-        // Mettre à jour l'avertissement si corbeille
-        const trashedWarning = document.getElementById('trashedItemWarning');
-        trashedWarning.classList.toggle('hidden', !item.deleted_at);
-
-        // Métadonnées
+        document.getElementById('trashedItemWarning').classList.toggle('hidden', !item.deleted_at);
         document.getElementById('editorDateLabel').innerText = `Modifié le ${new Date(item.updated_at || item.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}`;
         document.getElementById('editorTitleInput').value = item.title || '';
 
-        // Outils pour notes
         document.getElementById('noteFormattingToolbar').classList.toggle('hidden', item.type !== 'note');
 
-        // Icône Favori
         const favIcon = document.getElementById('iconActiveFav');
         if (item.favorite === 1) {
           favIcon.classList.remove('fill-none');
@@ -809,79 +973,72 @@
     }
 
     function renderEditorBody(item) {
-      const bodyContainer = document.getElementById('editorBodyContainer');
+      const container = document.getElementById('editorBodyContainer');
 
       if (item.type === 'note') {
-        const noteText = item.note ? item.note.body_text : '';
-        if (viewMode === 'preview') {
-          bodyContainer.innerHTML = `
-            <div class="markdown-rendered text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
-              ${renderMarkdownHtml(noteText)}
-            </div>
-          `;
-        } else {
-          bodyContainer.innerHTML = `
-            <textarea 
-              id="activeNoteEditor" 
-              rows="22" 
-              placeholder="Écrivez librement en Markdown... Ex: **gras**, *italique*, - [ ] Tâche à accomplir, # Titre." 
-              class="w-full bg-transparent text-sm prose-editor leading-relaxed border-0 focus:outline-none resize-none placeholder-zinc-300 dark:placeholder-zinc-700 text-zinc-800 dark:text-zinc-200"
-              oninput="handleContentChange()"
-            >${escapeHtml(noteText)}</textarea>
-          `;
-        }
-        updateWordStats(noteText);
+        const text = item.note ? item.note.body_text : '';
+        container.innerHTML = `
+          <div 
+            id="activeWysiwygEditor" 
+            contenteditable="true" 
+            class="wysiwyg-content min-h-[24rem] w-full text-sm leading-relaxed text-[var(--text-main)]"
+            oninput="handleWysiwygInput()"
+            placeholder="Écrivez librement... Utilisez # pour un titre, ou ☑ pour une tâche."
+          >${markdownToEditableHtml(text)}</div>
+        `;
+        updateWordStats(text);
       } else if (item.type === 'link') {
-        bodyContainer.innerHTML = `
-          <div class="p-6 rounded-2xl border border-zinc-200 dark:border-[#222430] bg-zinc-50 dark:bg-[#14151C] space-y-4">
-            <div class="flex items-start justify-between">
-              <div>
-                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Lien web enregistré</span>
-                <a href="${escapeHtml(item.link ? item.link.url : '#')}" target="_blank" rel="noopener noreferrer" class="text-sm font-bold text-brand hover:underline block mt-0.5 break-all">
+        container.innerHTML = `
+          <div class="p-6 rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] space-y-4 shadow-sm">
+            <div class="flex items-start justify-between gap-4">
+              <div class="space-y-1">
+                <span class="text-[10px] font-bold text-brand uppercase tracking-wider">Lien web enregistré</span>
+                <h3 class="text-base font-bold">${escapeHtml(item.title)}</h3>
+                <a href="${escapeHtml(item.link ? item.link.url : '#')}" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-500 hover:underline block break-all font-mono">
                   ${escapeHtml(item.link ? item.link.url : '')}
                 </a>
               </div>
-              <div class="flex items-center space-x-2">
-                <button onclick="navigator.clipboard.writeText('${escapeHtml(item.link ? item.link.url : '')}'); showToast('Lien copié');" class="px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-xs font-medium transition-colors">
+              <div class="flex items-center space-x-2 shrink-0">
+                <button onclick="navigator.clipboard.writeText('${escapeHtml(item.link ? item.link.url : '')}'); showToast('Lien copié');" class="px-3 py-1.5 rounded-lg border border-[var(--border-color)] hover:bg-[var(--bg-tertiary)] text-xs font-semibold transition-colors">
                   Copier l'URL
                 </button>
-                <a href="${escapeHtml(item.link ? item.link.url : '#')}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-hover text-white text-xs font-semibold shrink-0 transition-colors">
-                  Ouvrir le lien
+                <a href="${escapeHtml(item.link ? item.link.url : '#')}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-lg bg-brand hover:bg-brand-hover text-white text-xs font-bold transition-colors shadow-sm">
+                  Ouvrir
                 </a>
               </div>
             </div>
-            ${item.description ? `<p class="text-xs text-zinc-500 dark:text-zinc-400 border-t border-zinc-200 dark:border-[#20222C] pt-3">${escapeHtml(item.description)}</p>` : ''}
+            ${item.description ? `<p class="text-xs text-[var(--text-muted)] border-t border-[var(--border-color)] pt-3 leading-relaxed">${escapeHtml(item.description)}</p>` : ''}
           </div>
         `;
         document.getElementById('editorStatsCounter').innerText = 'Lien web';
       } else if (item.type === 'image') {
-        bodyContainer.innerHTML = `
-          <div class="space-y-4">
-            <div class="rounded-2xl overflow-hidden border border-zinc-200 dark:border-[#222430] bg-black/40 flex items-center justify-center p-3">
+        container.innerHTML = `
+          <div class="space-y-3">
+            <div class="rounded-2xl overflow-hidden border border-[var(--border-color)] bg-black/20 flex items-center justify-center p-3">
               <img src="/api/attachments/${item.id}" alt="${escapeHtml(item.title)}" class="max-h-[32rem] w-auto object-contain rounded-xl shadow-lg">
             </div>
-            <div class="flex items-center justify-between text-xs text-zinc-400 font-mono px-2">
+            <div class="flex items-center justify-between text-xs text-[var(--text-muted)] font-mono px-2">
               <span>${item.file ? escapeHtml(item.file.display_name) : ''}</span>
-              <a href="/api/attachments/${item.id}" download="${escapeHtml(item.file ? item.file.display_name : 'image.jpg')}" class="text-brand hover:underline">Télécharger l'image</a>
+              <a href="/api/attachments/${item.id}" download="${escapeHtml(item.file ? item.file.display_name : 'image.jpg')}" class="text-brand hover:underline font-bold">Télécharger l'image</a>
             </div>
           </div>
         `;
         document.getElementById('editorStatsCounter').innerText = item.file ? `${Math.round(item.file.size_bytes / 1024)} Ko` : 'Image';
       } else if (item.type === 'file') {
-        bodyContainer.innerHTML = `
-          <div class="p-6 rounded-2xl border border-zinc-200 dark:border-[#222430] bg-zinc-50 dark:bg-[#14151C] space-y-4">
+        container.innerHTML = `
+          <div class="p-6 rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] space-y-4 shadow-sm">
             <div class="flex items-center justify-between">
               <div>
                 <h4 class="text-base font-bold">${escapeHtml(item.file ? item.file.display_name : item.title)}</h4>
-                <p class="text-xs text-zinc-400 mt-1">${item.file ? Math.round(item.file.size_bytes / 1024) + ' Ko • ' + item.file.mime_type : ''}</p>
+                <p class="text-xs text-[var(--text-muted)] mt-1">${item.file ? Math.round(item.file.size_bytes / 1024) + ' Ko • ' + item.file.mime_type : ''}</p>
               </div>
               <a href="/api/attachments/${item.id}" download="${escapeHtml(item.file ? item.file.display_name : 'document')}" class="px-4 py-2 rounded-xl text-xs font-bold bg-brand hover:bg-brand-hover text-white transition-colors shadow-sm">
                 Télécharger le document
               </a>
             </div>
-            <div class="border-t border-zinc-200 dark:border-[#20222C] pt-3 flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <div class="border-t border-[var(--border-color)] pt-3 flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
               <span class="break-all">SHA-256 : ${item.file ? item.file.checksum : ''}</span>
-              <button onclick="navigator.clipboard.writeText('${item.file ? item.file.checksum : ''}'); showToast('Checksum copié');" class="hover:text-zinc-200 ml-2 shrink-0">Copier</button>
+              <button onclick="navigator.clipboard.writeText('${item.file ? item.file.checksum : ''}'); showToast('Checksum copié');" class="hover:text-[var(--text-main)] ml-2">Copier</button>
             </div>
           </div>
         `;
@@ -889,139 +1046,131 @@
       }
     }
 
-    function setViewMode(mode) {
-      viewMode = mode;
-      document.getElementById('btnModeEdit').className = mode === 'edit'
-        ? 'px-2 py-0.5 rounded text-[11px] font-semibold bg-white dark:bg-[#252834] shadow-sm text-zinc-900 dark:text-white transition-colors'
-        : 'px-2 py-0.5 rounded text-[11px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors';
-      document.getElementById('btnModePreview').className = mode === 'preview'
-        ? 'px-2 py-0.5 rounded text-[11px] font-semibold bg-white dark:bg-[#252834] shadow-sm text-zinc-900 dark:text-white transition-colors'
-        : 'px-2 py-0.5 rounded text-[11px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors';
-      if (activeItem) renderEditorBody(activeItem);
-    }
-
-    // --- Parser Markdown Riche avec Tâches Interactives ---
-    function renderMarkdownHtml(md) {
-      if (!md) return '<p class="italic text-zinc-400">Note vide. Cliquez sur "Éditer" pour rédiger.</p>';
-
+    // --- Rendu & Conversion Markdown / WYSIWYG ---
+    function markdownToEditableHtml(md) {
+      if (!md) return '<p><br></p>';
       const lines = md.split('\n');
       let html = '';
-      let inList = false;
-      let listType = 'ul';
-      let inPre = false;
-      let preContent = '';
-
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-
-        // Blocs de code ```
-        if (line.trim().startsWith('```')) {
-          if (inPre) {
-            html += `<pre><code>${escapeHtml(preContent)}</code></pre>`;
-            inPre = false;
-            preContent = '';
-          } else {
-            inPre = true;
-            preContent = '';
-          }
-          continue;
-        }
-
-        if (inPre) {
-          preContent += (preContent ? '\n' : '') + line;
-          continue;
-        }
-
-        // Tâches interactives (- [ ] ou - [x])
+      for (const line of lines) {
         const taskMatch = line.match(/^(\s*)-\s+\[([ xX])\]\s+(.*)$/);
         if (taskMatch) {
           const isDone = taskMatch[2].toLowerCase() === 'x';
-          const taskText = parseInlineMarkdown(taskMatch[3]);
-          html += `
-            <div class="task-item" onclick="toggleTaskInMarkdown(${i})">
-              <input type="checkbox" ${isDone ? 'checked' : ''} class="task-checkbox" onclick="event.stopPropagation(); toggleTaskInMarkdown(${i})">
-              <span class="${isDone ? 'task-done' : ''}">${taskText}</span>
-            </div>
-          `;
+          html += `<div class="task-item"><input type="checkbox" ${isDone ? 'checked' : ''} class="task-checkbox" onchange="handleTaskToggle(this)"><span class="${isDone ? 'task-done' : ''}">${escapeHtml(taskMatch[3])}</span></div>`;
           continue;
         }
-
-        // Titres H1, H2, H3
         if (line.startsWith('# ')) {
-          html += `<h1>${parseInlineMarkdown(line.substring(2))}</h1>`;
+          html += `<h1>${escapeHtml(line.substring(2))}</h1>`;
           continue;
         }
         if (line.startsWith('## ')) {
-          html += `<h2>${parseInlineMarkdown(line.substring(3))}</h2>`;
+          html += `<h2>${escapeHtml(line.substring(3))}</h2>`;
           continue;
         }
         if (line.startsWith('### ')) {
-          html += `<h3>${parseInlineMarkdown(line.substring(4))}</h3>`;
+          html += `<h3>${escapeHtml(line.substring(4))}</h3>`;
           continue;
         }
-
-        // Citations
+        if (line.startsWith('> [!TIP] ')) {
+          html += `<div class="callout-box callout-tip"><span>💡</span><div>${escapeHtml(line.substring(9))}</div></div>`;
+          continue;
+        }
+        if (line.startsWith('> [!WARNING] ')) {
+          html += `<div class="callout-box callout-warning"><span>⚠️</span><div>${escapeHtml(line.substring(13))}</div></div>`;
+          continue;
+        }
         if (line.startsWith('> ')) {
-          html += `<blockquote>${parseInlineMarkdown(line.substring(2))}</blockquote>`;
+          html += `<blockquote>${escapeHtml(line.substring(2))}</blockquote>`;
           continue;
         }
-
-        // Liste à puces simples
         if (line.startsWith('- ') || line.startsWith('* ')) {
-          html += `<ul><li>${parseInlineMarkdown(line.substring(2))}</li></ul>`;
+          html += `<ul><li>${escapeHtml(line.substring(2))}</li></ul>`;
           continue;
         }
-
-        // Paragraphe classique
         if (line.trim().length === 0) {
-          html += '<br>';
+          html += '<p><br></p>';
         } else {
-          html += `<p>${parseInlineMarkdown(line)}</p>`;
+          html += `<p>${escapeHtml(line)}</p>`;
         }
       }
-
       return html;
     }
 
-    function parseInlineMarkdown(text) {
-      let t = escapeHtml(text);
-      // Gras **texte**
-      t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-      // Italique *texte*
-      t = t.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-      // Code `code`
-      t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
-      // Liens [texte](url)
-      t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-      return t;
+    function editableHtmlToMarkdown(container) {
+      if (!container) return '';
+      let md = '';
+      for (const node of container.childNodes) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          md += node.textContent + '\n';
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const el = node;
+          if (el.tagName === 'H1') md += `# ${el.innerText.trim()}\n`;
+          else if (el.tagName === 'H2') md += `## ${el.innerText.trim()}\n`;
+          else if (el.tagName === 'H3') md += `### ${el.innerText.trim()}\n`;
+          else if (el.classList.contains('task-item')) {
+            const cb = el.querySelector('input[type="checkbox"]');
+            const span = el.querySelector('span');
+            md += `- [${cb && cb.checked ? 'x' : ' '}] ${span ? span.innerText.trim() : ''}\n`;
+          } else if (el.tagName === 'BLOCKQUOTE') {
+            md += `> ${el.innerText.trim()}\n`;
+          } else if (el.classList.contains('callout-tip')) {
+            md += `> [!TIP] ${el.innerText.replace('💡', '').trim()}\n`;
+          } else if (el.classList.contains('callout-warning')) {
+            md += `> [!WARNING] ${el.innerText.replace('⚠️', '').trim()}\n`;
+          } else if (el.tagName === 'UL') {
+            md += `- ${el.innerText.trim()}\n`;
+          } else if (el.tagName === 'P') {
+            md += `${el.innerText.trim()}\n`;
+          } else {
+            md += `${el.innerText.trim()}\n`;
+          }
+        }
+      }
+      return md.trim();
     }
 
-    // Basculer l'état d'une case à cocher dans le texte Markdown en cliquant dessus
-    async function toggleTaskInMarkdown(lineIndex) {
-      if (!activeItem || !activeItem.note) return;
-      const lines = activeItem.note.body_text.split('\n');
-      if (lineIndex < 0 || lineIndex >= lines.length) return;
+    function handleTaskToggle(checkbox) {
+      const span = checkbox.nextElementSibling;
+      if (span) span.classList.toggle('task-done', checkbox.checked);
+      handleWysiwygInput();
+    }
 
-      const line = lines[lineIndex];
-      if (line.includes('- [ ]')) {
-        lines[lineIndex] = line.replace('- [ ]', '- [x]');
-      } else if (line.includes('- [x]') || line.includes('- [X]')) {
-        lines[lineIndex] = line.replace(/- \[[xX]\]/, '- [ ]');
+    function handleWysiwygInput() {
+      const editor = document.getElementById('activeWysiwygEditor');
+      if (!editor || !activeItem) return;
+      const md = editableHtmlToMarkdown(editor);
+      activeItem.note = activeItem.note || { body_text: '', format: 'markdown' };
+      activeItem.note.body_text = md;
+      updateWordStats(md);
+      handleContentChange();
+    }
+
+    function formatSelection(cmd) {
+      const editor = document.getElementById('activeWysiwygEditor');
+      if (!editor) return;
+      editor.focus();
+
+      if (cmd === 'bold') document.execCommand('bold', false, null);
+      else if (cmd === 'italic') document.execCommand('italic', false, null);
+      else if (cmd === 'h1') document.execCommand('formatBlock', false, '<h1>');
+      else if (cmd === 'h2') document.execCommand('formatBlock', false, '<h2>');
+      else if (cmd === 'quote') document.execCommand('formatBlock', false, '<blockquote>');
+      else if (cmd === 'bullet') document.execCommand('insertUnorderedList', false, null);
+      else if (cmd === 'code') {
+        const sel = window.getSelection();
+        if (sel) document.execCommand('insertHTML', false, `<code>${sel.toString() || 'code'}</code>`);
+      } else if (cmd === 'callout') {
+        document.execCommand('insertHTML', false, `<div class="callout-box callout-tip"><span>💡</span><div>Astuce ou note clé</div></div><p><br></p>`);
+      } else if (cmd === 'check') {
+        document.execCommand('insertHTML', false, `<div class="task-item"><input type="checkbox" class="task-checkbox" onchange="handleTaskToggle(this)"><span>Nouvelle tâche</span></div><p><br></p>`);
       }
 
-      activeItem.note.body_text = lines.join('\n');
-      renderEditorBody(activeItem);
-      await saveActiveItemDirectly();
+      handleWysiwygInput();
     }
 
-    // --- Saisie et Sauvegarde Automatique ---
+    // --- Sauvegarde Automatique & Statistiques ---
     function handleContentChange() {
       const status = document.getElementById('saveStatusIndicator');
-      status.innerText = 'Enregistrement...';
-      
-      const noteEl = document.getElementById('activeNoteEditor');
-      if (noteEl) updateWordStats(noteEl.value);
-
+      status.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span><span>Enregistrement...</span>`;
       clearTimeout(autoSaveTimer);
       autoSaveTimer = setTimeout(saveActiveItemDirectly, 300);
     }
@@ -1029,13 +1178,7 @@
     async function saveActiveItemDirectly() {
       if (!activeItem) return;
       const title = document.getElementById('editorTitleInput').value.trim() || 'Sans titre';
-      let noteBody = undefined;
-      const noteEl = document.getElementById('activeNoteEditor');
-      if (noteEl) {
-        noteBody = noteEl.value;
-      } else if (activeItem.note) {
-        noteBody = activeItem.note.body_text;
-      }
+      let noteBody = activeItem.note ? activeItem.note.body_text : undefined;
 
       try {
         const res = await fetch(`/api/items/${activeItem.id}`, {
@@ -1045,14 +1188,11 @@
         });
         if (res.ok) {
           activeItem.title = title;
-          if (noteBody !== undefined && activeItem.note) {
-            activeItem.note.body_text = noteBody;
-          }
-          document.getElementById('saveStatusIndicator').innerText = 'Enregistré';
+          document.getElementById('saveStatusIndicator').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>Enregistré en local</span>`;
           renderItemsList();
         }
       } catch (err) {
-        document.getElementById('saveStatusIndicator').innerText = 'Erreur locale';
+        document.getElementById('saveStatusIndicator').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>Erreur locale</span>`;
       }
     }
 
@@ -1062,35 +1202,10 @@
       const words = text && text.trim() ? text.trim().split(/\s+/).length : 0;
       const chars = text ? text.length : 0;
       const readMin = Math.max(1, Math.ceil(words / 200));
-      counter.innerText = `${words} mot${words > 1 ? 's' : ''} • ${chars} car. • ${readMin} min de lecture`;
+      counter.innerText = `${words} mot${words > 1 ? 's' : ''} • ${chars} car. • ${readMin} min`;
     }
 
-    function formatSelection(type) {
-      if (viewMode === 'preview') setViewMode('edit');
-      const textarea = document.getElementById('activeNoteEditor');
-      if (!textarea) return;
-
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selText = textarea.value.substring(start, end);
-      let replacement = '';
-
-      switch (type) {
-        case 'bold': replacement = `**${selText || 'texte en gras'}**`; break;
-        case 'italic': replacement = `*${selText || 'texte en italique'}*`; break;
-        case 'h1': replacement = `\n# ${selText || 'Grand titre'}\n`; break;
-        case 'h2': replacement = `\n## ${selText || 'Sous-titre'}\n`; break;
-        case 'check': replacement = `\n- [ ] ${selText || 'Nouvelle tâche'}`; break;
-        case 'bullet': replacement = `\n- ${selText || 'Élément'}`; break;
-        case 'quote': replacement = `\n> ${selText || 'Citation'}\n`; break;
-      }
-
-      textarea.setRangeText(replacement, start, end, 'end');
-      handleContentChange();
-      textarea.focus();
-    }
-
-    // --- Création de Notes, Liens, Fichiers ---
+    // --- Actions & Créations ---
     async function createNewNote() {
       try {
         const res = await fetch('/api/items/note', {
@@ -1115,7 +1230,7 @@
 
     async function promptAddLink() {
       toggleQuickAddMenu();
-      const url = prompt('Adresse URL du lien :');
+      const url = prompt('Collez l\'adresse URL :');
       if (!url) return;
       try {
         const res = await fetch('/api/items/link', {
@@ -1127,6 +1242,7 @@
           const item = await res.json();
           await loadItems();
           selectItem(item.id);
+          showToast('Lien enregistré avec aperçu');
         } else {
           const err = await res.json();
           alert(err.error || 'Erreur lors de l\'enregistrement');
@@ -1143,16 +1259,13 @@
 
       const fd = new FormData();
       fd.append('file', file);
-      showToast('Importation...');
+      showToast('Importation de ' + file.name + '...');
 
       try {
-        const res = await fetch('/api/items/file', {
-          method: 'POST',
-          body: fd
-        });
+        const res = await fetch('/api/items/file', { method: 'POST', body: fd });
         if (res.ok) {
           const item = await res.json();
-          showToast('Fichier importé avec succès');
+          showToast('Fichier importé avec empreinte SHA-256');
           await loadItems();
           selectItem(item.id);
         }
@@ -1163,7 +1276,6 @@
       }
     }
 
-    // Importer un fichier Markdown .md directement comme note
     async function importMarkdownFile(event) {
       toggleQuickAddMenu();
       const file = event.target.files && event.target.files[0];
@@ -1173,12 +1285,8 @@
         const text = await file.text();
         const baseName = file.name.replace(/\.[^/.]+$/, '');
         let title = baseName;
-
-        // Détecter si première ligne est un titre # Titre
         const firstLine = text.split('\n')[0].trim();
-        if (firstLine.startsWith('# ')) {
-          title = firstLine.substring(2).trim();
-        }
+        if (firstLine.startsWith('# ')) title = firstLine.substring(2).trim();
 
         const res = await fetch('/api/items/note', {
           method: 'POST',
@@ -1187,14 +1295,28 @@
         });
         if (res.ok) {
           const note = await res.json();
-          showToast('Note Markdown importée');
+          showToast('Note importée fidèlement');
           await loadItems();
           selectItem(note.id);
         }
       } catch (err) {
-        alert('Erreur lors de l\'import Markdown: ' + err.message);
+        alert('Erreur: ' + err.message);
       } finally {
         event.target.value = '';
+      }
+    }
+
+    async function seedSampleContent() {
+      try {
+        const res = await fetch('/api/items/seed', { method: 'POST' });
+        if (res.ok) {
+          showToast('Exemples de découverte ajoutés !');
+          await loadTags();
+          await loadItems();
+          if (items.length > 0) selectItem(items[0].id);
+        }
+      } catch (err) {
+        console.error(err);
       }
     }
 
@@ -1202,7 +1324,7 @@
       document.getElementById('quickAddMenu').classList.toggle('hidden');
     }
 
-    // --- Duplication et Gestion ---
+    // --- Duplication & Corbeille ---
     async function duplicateCurrentItem() {
       if (!activeItem) return;
       try {
@@ -1238,7 +1360,7 @@
     async function deleteCurrentItem() {
       if (!activeItem) return;
       if (activeFilter === 'trash') {
-        if (!confirm('Supprimer définitivement cet élément ? Cette action est irréversible.')) return;
+        if (!confirm('Supprimer définitivement cet élément ?')) return;
         await fetch(`/api/items/${activeItem.id}`, { method: 'DELETE' });
         showToast('Supprimé définitivement');
       } else {
@@ -1267,7 +1389,7 @@
     }
 
     async function emptyEntireTrash() {
-      if (!confirm('Vider l\'intégralité de la corbeille ? Tous les fichiers seront supprimés du disque.')) return;
+      if (!confirm('Vider l\'intégralité de la corbeille ? Tous les fichiers orphelins seront supprimés du disque.')) return;
       try {
         const res = await fetch('/api/trash/empty', { method: 'POST' });
         const data = await res.json();
@@ -1291,7 +1413,7 @@
         window.open(`/api/attachments/${activeItem.id}`, '_blank');
       } else if (activeItem.link) {
         navigator.clipboard.writeText(activeItem.link.url);
-        showToast('Lien copié dans le presse-papier');
+        showToast('Lien copié');
       }
     }
 
@@ -1363,7 +1485,7 @@
       const id = contextMenuItemId;
       closeContextMenu();
       if (activeFilter === 'trash') {
-        if (!confirm('Supprimer définitivement cet élément ?')) return;
+        if (!confirm('Supprimer définitivement ?')) return;
         await fetch(`/api/items/${id}`, { method: 'DELETE' });
       } else {
         await fetch(`/api/items/${id}/trash`, { method: 'POST' });
@@ -1373,7 +1495,7 @@
       loadItems();
     }
 
-    // --- Palette de Commandes (Ctrl+K / Ctrl+P) ---
+    // --- Command Palette (Ctrl+K / Ctrl+P) ---
     function openCommandPalette() {
       const modal = document.getElementById('commandPaletteModal');
       const input = document.getElementById('paletteSearchInput');
@@ -1392,43 +1514,42 @@
       const q = query.trim().toLowerCase();
 
       const defaultActions = [
-        { label: 'Nouvelle note', icon: '📝', action: () => { closeCommandPalette(); createNewNote(); } },
+        { label: 'Nouvelle note de texte', icon: '📝', action: () => { closeCommandPalette(); createNewNote(); } },
         { label: 'Enregistrer un lien web', icon: '🔗', action: () => { closeCommandPalette(); promptAddLink(); } },
         { label: 'Basculer le thème Sombre / Clair', icon: '🌓', action: () => { closeCommandPalette(); toggleTheme(); } },
         { label: 'Exporter toutes les données en ZIP', icon: '📦', action: () => { closeCommandPalette(); downloadBackupZip(); } },
-        { label: 'Ouvrir les paramètres', icon: '⚙️', action: () => { closeCommandPalette(); openSettingsModal(); } },
+        { label: 'Paramètres et confidentialité', icon: '⚙️', action: () => { closeCommandPalette(); openSettingsModal(); } },
         { label: 'Vider la corbeille', icon: '🗑️', action: () => { closeCommandPalette(); emptyEntireTrash(); } }
       ];
 
       const filteredActions = defaultActions.filter(a => a.label.toLowerCase().includes(q));
-      const matchedNotes = items.filter(i => (i.title || '').toLowerCase().includes(q)).slice(0, 5);
+      const matchedNotes = items.filter(i => (i.title || '').toLowerCase().includes(q)).slice(0, 6);
 
       let html = '';
-
       if (filteredActions.length > 0) {
-        html += `<div class="px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase">Commandes</div>`;
+        html += `<div class="px-2 py-1 text-[10px] font-bold text-[var(--text-muted)] uppercase">Commandes</div>`;
         html += filteredActions.map((a, idx) => `
-          <div onclick="executePaletteAction(${idx})" class="px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-[#20222C] cursor-pointer flex items-center justify-between">
+          <div onclick="executePaletteAction(${idx})" class="px-3 py-2 rounded-lg hover:bg-[var(--bg-tertiary)] cursor-pointer flex items-center justify-between">
             <div class="flex items-center space-x-2">
               <span>${a.icon}</span>
-              <span class="font-medium">${escapeHtml(a.label)}</span>
+              <span class="font-semibold">${escapeHtml(a.label)}</span>
             </div>
           </div>
         `).join('');
       }
 
       if (matchedNotes.length > 0) {
-        html += `<div class="px-2 pt-2 pb-1 text-[10px] font-bold text-zinc-400 uppercase">Notes & Éléments</div>`;
+        html += `<div class="px-2 pt-2 pb-1 text-[10px] font-bold text-[var(--text-muted)] uppercase">Notes & Éléments</div>`;
         html += matchedNotes.map(item => `
-          <div onclick="closeCommandPalette(); selectItem('${item.id}');" class="px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-[#20222C] cursor-pointer flex items-center justify-between">
-            <span class="font-medium text-zinc-800 dark:text-zinc-200 truncate">${escapeHtml(item.title || 'Sans titre')}</span>
-            <span class="text-[10px] text-zinc-400">${item.type}</span>
+          <div onclick="closeCommandPalette(); selectItem('${item.id}');" class="px-3 py-2 rounded-lg hover:bg-[var(--bg-tertiary)] cursor-pointer flex items-center justify-between">
+            <span class="font-bold truncate">${escapeHtml(item.title || 'Sans titre')}</span>
+            <span class="text-[10px] text-[var(--text-muted)] font-mono">${item.type}</span>
           </div>
         `).join('');
       }
 
       if (!html) {
-        html = `<div class="p-4 text-center text-zinc-400 text-xs">Aucune commande ou note trouvée.</div>`;
+        html = `<div class="p-4 text-center text-[var(--text-muted)] text-xs">Aucun résultat</div>`;
       }
 
       list.innerHTML = html;
@@ -1449,15 +1570,16 @@
     function renderEditorTags(item) {
       const container = document.getElementById('editorTagsContainer');
       const tagsHtml = (item.tags || []).map(t => `
-        <span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-[#1C1E26] text-zinc-600 dark:text-zinc-300 text-[11px] font-medium">
+        <span class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-[var(--bg-tertiary)] text-[var(--text-main)] text-[11px] font-medium border border-[var(--border-color)]">
+          <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${t.color || '#0066FF'}"></span>
           <span>#${escapeHtml(t.name)}</span>
-          <button onclick="removeTagFromActive('${t.id}')" class="text-zinc-400 hover:text-rose-500 ml-0.5">✕</button>
+          <button onclick="removeTagFromActive('${t.id}')" class="text-[var(--text-muted)] hover:text-rose-500 ml-0.5">✕</button>
         </span>
       `).join('');
 
       container.innerHTML = `
         ${tagsHtml}
-        <button onclick="promptAddTagToActive()" class="text-[11px] text-zinc-400 hover:text-brand px-1.5 py-0.5 rounded border border-dashed border-zinc-300 dark:border-zinc-700 transition-colors">
+        <button onclick="promptAddTagToActive()" class="text-[11px] text-[var(--text-muted)] hover:text-brand px-2 py-0.5 rounded-full border border-dashed border-[var(--border-color)] hover:border-brand transition-colors">
           + Étiquette
         </button>
       `;
@@ -1472,11 +1594,13 @@
     async function promptCreateTag() {
       const name = prompt('Nom de la nouvelle étiquette :');
       if (!name || !name.trim()) return;
+      const colors = ['#0066FF', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4'];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
       try {
         await fetch('/api/tags', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name.trim() })
+          body: JSON.stringify({ name: name.trim(), color: randomColor })
         });
         loadTags();
       } catch (err) {
@@ -1504,7 +1628,7 @@
         return;
       }
       const tagNames = tags.map(t => t.name).join('\n- ');
-      const chosen = prompt(`Entrez le nom de l'étiquette à ajouter :\n- ${tagNames}`);
+      const chosen = prompt(`Entrez le nom de l'étiquette à assigner :\n- ${tagNames}`);
       if (!chosen) return;
 
       const tag = tags.find(t => t.name.toLowerCase() === chosen.trim().toLowerCase());
@@ -1542,11 +1666,11 @@
       activeFilter = filter;
       activeTagId = null;
       document.querySelectorAll('.nav-item').forEach(btn => {
-        btn.className = 'nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200/50 dark:hover:bg-[#1B1D24] transition-colors';
+        btn.className = 'nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-main)] transition-colors';
       });
       const activeBtn = document.getElementById(`nav-${filter}`);
       if (activeBtn) {
-        activeBtn.className = 'nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-zinc-200/80 dark:bg-[#1E2129] text-zinc-900 dark:text-white transition-colors';
+        activeBtn.className = 'nav-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[var(--bg-tertiary)] text-brand transition-colors';
       }
       renderTagsNav();
       loadItems();
@@ -1555,11 +1679,11 @@
     function setQuickType(type) {
       activeType = type;
       document.querySelectorAll('.chip-filter').forEach(chip => {
-        chip.className = 'chip-filter px-2 py-0.5 rounded-md font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#1A1C22] transition-colors';
+        chip.className = 'chip-filter px-2 py-0.5 rounded-md font-medium text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] transition-colors';
       });
       const activeChip = document.getElementById(`chip-${type}`);
       if (activeChip) {
-        activeChip.className = 'chip-filter px-2 py-0.5 rounded-md font-semibold bg-zinc-200 dark:bg-[#22242E] text-zinc-900 dark:text-white transition-colors';
+        activeChip.className = 'chip-filter px-2 py-0.5 rounded-md font-bold bg-[var(--bg-tertiary)] text-[var(--text-main)] transition-colors';
       }
       loadItems();
     }
@@ -1574,6 +1698,7 @@
         document.getElementById('badge-notes-count').innerText = all.filter(i => i.type === 'note').length;
         document.getElementById('badge-links-count').innerText = all.filter(i => i.type === 'link').length;
         document.getElementById('badge-files-count').innerText = all.filter(i => i.type === 'file' || i.type === 'image').length;
+        document.getElementById('badge-unclassified-count').innerText = all.filter(i => !i.tags || i.tags.length === 0).length;
 
         const resTrash = await fetch('/api/items?trash=true');
         const dataTrash = await resTrash.json();
@@ -1615,7 +1740,7 @@
           loadItems();
         }
       } catch (err) {
-        alert('Erreur lors de la lecture du fichier : ' + err.message);
+        alert('Erreur: ' + err.message);
       }
     }
 
@@ -1638,10 +1763,9 @@
       }, 150);
     });
 
-    // --- Navigation au Clavier (Flèches Haut/Bas, Ctrl+N, Ctrl+K, Ctrl+D) ---
+    // --- Raccourcis Clavier & Navigation ---
     window.addEventListener('keydown', (e) => {
-      // Ignorer si on est en train d'écrire dans la note ou un champ texte
-      const isInput = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
+      const isInput = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName) || document.activeElement?.getAttribute('contenteditable') === 'true';
 
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') {
         e.preventDefault();
@@ -1665,7 +1789,6 @@
         const addMenu = document.getElementById('quickAddMenu');
         if (addMenu) addMenu.classList.add('hidden');
       } else if (!isInput && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
-        // Navigation fluide de note en note avec les flèches haut/bas
         if (items.length === 0) return;
         e.preventDefault();
         const currentIndex = items.findIndex(i => activeItem && i.id === activeItem.id);
@@ -1679,7 +1802,6 @@
       }
     });
 
-    // Fermer le menu contextuel si on clique ailleurs
     window.addEventListener('click', () => {
       closeContextMenu();
       const addMenu = document.getElementById('quickAddMenu');
@@ -1688,14 +1810,12 @@
       }
     });
 
-    // --- Glisser-Déposer de Fichiers depuis Windows ---
+    // --- Glisser-Déposer de Fichiers ---
     window.addEventListener('dragover', (e) => e.preventDefault());
     window.addEventListener('drop', async (e) => {
       e.preventDefault();
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         const file = e.dataTransfer.files[0];
-
-        // Si fichier markdown .md
         if (file.name.endsWith('.md') || file.name.endsWith('.txt')) {
           const text = await file.text();
           const baseName = file.name.replace(/\.[^/.]+$/, '');
@@ -1717,7 +1837,6 @@
           return;
         }
 
-        // Autre fichier / image
         const fd = new FormData();
         fd.append('file', file);
         showToast('Importation de ' + file.name + '...');
@@ -1725,7 +1844,7 @@
           const res = await fetch('/api/items/file', { method: 'POST', body: fd });
           if (res.ok) {
             const item = await res.json();
-            showToast('Document importé');
+            showToast('Fichier importé avec succès');
             await loadItems();
             selectItem(item.id);
           }
@@ -1735,7 +1854,6 @@
       }
     });
 
-    // --- Formatage de dates et surbrillance ---
     function formatRelativeDate(isoStr) {
       if (!isoStr) return '';
       const d = new Date(isoStr);
@@ -1766,7 +1884,7 @@
         .replace(/'/g, '&#039;');
     }
 
-    // --- Démarrage de l'Application ---
+    // --- Initialisation ---
     initTheme();
     loadTags();
     loadItems().then(() => {
