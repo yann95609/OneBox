@@ -68,3 +68,29 @@ export function isImageMimeType(mime: string): boolean {
   return mime.startsWith('image/');
 }
 
+export async function fetchLinkMetadata(url: string): Promise<{ title?: string; description?: string }> {
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2000);
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { 'User-Agent': 'OneBox/1.0 (Desktop Local Knowledge Base)' }
+    });
+    clearTimeout(timer);
+    if (!res.ok) return {};
+
+    const html = await res.text();
+    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    const descMatch = html.match(/<meta\s+name=["']description["']\s+content=["']([^"']+)["']/i) ||
+                      html.match(/<meta\s+property=["']og:description["']\s+content=["']([^"']+)["']/i);
+
+    return {
+      title: titleMatch ? titleMatch[1].trim() : undefined,
+      description: descMatch ? descMatch[1].trim() : undefined
+    };
+  } catch {
+    return {};
+  }
+}
+
+

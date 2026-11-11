@@ -404,11 +404,16 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 404, { error: 'Fichier introuvable sur le disque' });
     }
 
-    // 14. Servir le logo officiel
-    if (pathname === '/assets/logo.jpg') {
-      const logoPath = path.join(ASSETS_DIR, 'logo.jpg');
+    // 14. Servir le logo officiel (icône cube)
+    if (pathname === '/assets/logo.png' || pathname === '/assets/logo.jpg') {
+      const ext = pathname.endsWith('.png') ? 'png' : 'jpg';
+      let logoPath = path.join(ASSETS_DIR, `logo.${ext}`);
+      if (!fs.existsSync(logoPath)) {
+        logoPath = path.join(ASSETS_DIR, 'logo.png');
+      }
       if (fs.existsSync(logoPath)) {
-        res.writeHead(200, { 'Content-Type': 'image/jpeg' });
+        const isPng = logoPath.endsWith('.png');
+        res.writeHead(200, { 'Content-Type': isPng ? 'image/png' : 'image/jpeg' });
         fs.createReadStream(logoPath).pipe(res);
         return;
       }
