@@ -538,6 +538,11 @@
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
             </button>
 
+            <!-- Imprimer / Exporter en PDF -->
+            <button onclick="window.print()" class="p-1.5 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors" title="Imprimer ou enregistrer en PDF (Ctrl+P)">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            </button>
+
             <!-- Exporter -->
             <button onclick="exportCurrentItem()" class="p-1.5 rounded-lg hover:bg-[var(--bg-tertiary)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors" title="Exporter cet élément (Markdown / Document)">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
@@ -657,8 +662,20 @@
       </div>
 
       <div class="space-y-4 text-xs">
+        <!-- Langue de l'interface (Section 12) -->
+        <div class="flex items-center justify-between p-2.5 rounded-xl bg-[var(--bg-tertiary)] border border-[var(--border-color)]">
+          <span class="font-bold text-[var(--text-main)]">Langue de l'interface (Language)</span>
+          <select id="settingLanguageSelect" onchange="changeLanguage(this.value)" class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg px-2 py-1 text-xs text-[var(--text-main)] focus:outline-none cursor-pointer">
+            <option value="fr">Français</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+
         <div>
-          <label class="block text-[var(--text-muted)] font-medium mb-1">Dossier de stockage local</label>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-[var(--text-muted)] font-medium">Dossier de stockage local</label>
+            <span id="settingDbSize" class="text-[10px] font-mono text-brand font-semibold"></span>
+          </div>
           <input id="settingStoragePath" type="text" readonly class="w-full px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-color)] font-mono text-[11px] text-[var(--text-muted)]">
         </div>
 
@@ -686,6 +703,61 @@
       <div class="flex justify-between items-center pt-3 border-t border-[var(--border-color)] text-[11px] text-[var(--text-muted)]">
         <span>Licence Apache 2.0</span>
         <button onclick="closeSettingsModal()" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--border-color)] transition-colors">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox Plein Écran pour images -->
+  <div id="imageLightboxModal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center hidden p-4" onclick="closeImageLightbox()">
+    <button class="absolute top-5 right-5 text-white/80 hover:text-white text-2xl font-bold p-2 z-10" onclick="closeImageLightbox()">✕</button>
+    <img id="lightboxImg" src="" alt="Aperçu" class="max-h-[92vh] max-w-[92vw] object-contain rounded-xl shadow-2xl cursor-default" onclick="event.stopPropagation()">
+  </div>
+
+  <!-- Modale Aide & Raccourcis Clavier (Section 6.3) -->
+  <div id="shortcutsHelpModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4" onclick="closeShortcutsModal()">
+    <div class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-4 animate-in fade-in zoom-in-95 duration-100" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+        <h3 class="font-bold text-sm">Raccourcis Clavier</h3>
+        <button onclick="closeShortcutsModal()" class="text-[var(--text-muted)] hover:text-[var(--text-main)]">✕</button>
+      </div>
+
+      <div class="space-y-2 text-xs">
+        <div class="flex items-center justify-between py-1 border-b border-[var(--border-color)]/50">
+          <span>Nouvelle note</span>
+          <kbd class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border-color)]">Ctrl + N</kbd>
+        </div>
+        <div class="flex items-center justify-between py-1 border-b border-[var(--border-color)]/50">
+          <span>Recherche rapide & Commandes</span>
+          <kbd class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border-color)]">Ctrl + K</kbd>
+        </div>
+        <div class="flex items-center justify-between py-1 border-b border-[var(--border-color)]/50">
+          <span>Dupliquer l'élément actif</span>
+          <kbd class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border-color)]">Ctrl + D</kbd>
+        </div>
+        <div class="flex items-center justify-between py-1 border-b border-[var(--border-color)]/50">
+          <span>Masquer / Afficher barre latérale</span>
+          <kbd class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border-color)]">Ctrl + \</kbd>
+        </div>
+        <div class="flex items-center justify-between py-1 border-b border-[var(--border-color)]/50">
+          <span>Imprimer ou Exporter en PDF</span>
+          <kbd class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border-color)]">Ctrl + P</kbd>
+        </div>
+        <div class="flex items-center justify-between py-1 border-b border-[var(--border-color)]/50">
+          <span>Naviguer entre les notes</span>
+          <kbd class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border-color)]">↑ / ↓</kbd>
+        </div>
+        <div class="flex items-center justify-between py-1 border-b border-[var(--border-color)]/50">
+          <span>Mettre à la corbeille</span>
+          <kbd class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border-color)]">Suppr</kbd>
+        </div>
+        <div class="flex items-center justify-between py-1">
+          <span>Fermer les modales</span>
+          <kbd class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-tertiary)] border border-[var(--border-color)]">Échap</kbd>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button onclick="closeShortcutsModal()" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-[var(--bg-tertiary)] hover:bg-[var(--border-color)] transition-colors">Compris</button>
       </div>
     </div>
   </div>
@@ -1026,7 +1098,7 @@
         container.innerHTML = `
           <div class="space-y-3">
             <div class="rounded-2xl overflow-hidden border border-[var(--border-color)] bg-black/20 flex items-center justify-center p-3">
-              <img src="/api/attachments/${item.id}" alt="${escapeHtml(item.title)}" class="max-h-[32rem] w-auto object-contain rounded-xl shadow-lg">
+              <img src="/api/attachments/${item.id}" alt="${escapeHtml(item.title)}" onclick="openImageLightbox('/api/attachments/${item.id}', '${escapeHtml(item.title)}')" class="max-h-[32rem] w-auto object-contain rounded-xl shadow-lg cursor-pointer hover:scale-[1.01] transition-transform" title="Cliquer pour afficher en plein écran">
             </div>
             <div class="flex items-center justify-between text-xs text-[var(--text-muted)] font-mono px-2">
               <span>${item.file ? escapeHtml(item.file.display_name) : ''}</span>
@@ -1717,9 +1789,79 @@
       } catch {}
     }
 
+    let currentLang = localStorage.getItem('onebox_lang') || 'fr';
+
+    function changeLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('onebox_lang', lang);
+      applyTranslations();
+      showToast(lang === 'fr' ? 'Langue changée en Français' : 'Language switched to English');
+    }
+
+    const i18nDict = {
+      fr: {
+        all: 'Tous les éléments',
+        fav: 'Favoris & Épinglés',
+        notes: 'Notes de texte',
+        links: 'Liens web',
+        files: 'Fichiers & Images',
+        unclassified: 'Non classés',
+        trash: 'Corbeille',
+        quickSearch: 'Recherche rapide...',
+        newNote: 'Nouvelle note'
+      },
+      en: {
+        all: 'All items',
+        fav: 'Favorites & Pinned',
+        notes: 'Text notes',
+        links: 'Web links',
+        files: 'Files & Images',
+        unclassified: 'Unclassified',
+        trash: 'Trash',
+        quickSearch: 'Quick search...',
+        newNote: 'New note'
+      }
+    };
+
+    function applyTranslations() {
+      const d = i18nDict[currentLang] || i18nDict.fr;
+      document.querySelector('#nav-inbox span').innerText = d.all;
+      document.querySelector('#nav-favorites span').innerText = d.fav;
+      document.querySelector('#nav-notes span').innerText = d.notes;
+      document.querySelector('#nav-links span').innerText = d.links;
+      document.querySelector('#nav-files span').innerText = d.files;
+      document.querySelector('#nav-unclassified span').innerText = d.unclassified;
+      document.querySelector('#nav-trash span').innerText = d.trash;
+      const qs = document.getElementById('labelQuickSearch');
+      if (qs) qs.innerText = d.quickSearch;
+    }
+
+    function openImageLightbox(src, alt) {
+      const modal = document.getElementById('imageLightboxModal');
+      const img = document.getElementById('lightboxImg');
+      img.src = src;
+      img.alt = alt || '';
+      modal.classList.remove('hidden');
+    }
+
+    function closeImageLightbox() {
+      document.getElementById('imageLightboxModal').classList.add('hidden');
+    }
+
+    function openShortcutsModal() {
+      document.getElementById('shortcutsHelpModal').classList.remove('hidden');
+    }
+
+    function closeShortcutsModal() {
+      document.getElementById('shortcutsHelpModal').classList.add('hidden');
+    }
+
     function openSettingsModal() {
       fetch('/api/settings').then(r => r.json()).then(data => {
         document.getElementById('settingStoragePath').value = data.storagePath || '';
+        const sizeKb = data.dbSizeBytes ? Math.round(data.dbSizeBytes / 1024) : 0;
+        document.getElementById('settingDbSize').innerText = `Base SQLite : ${sizeKb} Ko`;
+        document.getElementById('settingLanguageSelect').value = currentLang;
         document.getElementById('settingsModal').classList.remove('hidden');
       });
     }
@@ -1797,8 +1939,13 @@
         closeContextMenu();
         closeCommandPalette();
         closeSettingsModal();
+        closeImageLightbox();
+        closeShortcutsModal();
         const addMenu = document.getElementById('quickAddMenu');
         if (addMenu) addMenu.classList.add('hidden');
+      } else if (!isInput && (e.key === '?' || e.key === 'F1')) {
+        e.preventDefault();
+        openShortcutsModal();
       } else if (!isInput && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
         if (items.length === 0) return;
         e.preventDefault();
@@ -1897,6 +2044,7 @@
 
     // --- Initialisation ---
     initTheme();
+    applyTranslations();
     loadTags();
     loadItems().then(() => {
       if (items.length > 0) selectItem(items[0].id);

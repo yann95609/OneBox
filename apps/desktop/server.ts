@@ -385,10 +385,17 @@ const server = http.createServer(async (req, res) => {
 
     // 12. Paramètres de l'application
     if (pathname === '/api/settings' && method === 'GET') {
+      let dbSizeBytes = 0;
+      const dbPath = path.join(process.cwd(), 'data', 'onebox.db');
+      if (fs.existsSync(dbPath)) {
+        try { dbSizeBytes = fs.statSync(dbPath).size; } catch {}
+      }
+
       return sendJson(res, 200, {
         language: db.getSetting('language', 'fr'),
         theme: db.getSetting('theme', 'dark'),
         storagePath: fileManager.getStorageDirectory(),
+        dbSizeBytes,
         version: '1.0.0-MVP'
       });
     }
